@@ -1,32 +1,34 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-export default auth((req) => {
-  const { pathname } = req.nextUrl;
+/**
+ * Lightweight Edge middleware — only next-auth/jwt (no Prisma/bcrypt).
+ */
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-  // Public admin routes
   if (!pathname.startsWith("/admin") || pathname === "/admin/login") {
     return NextResponse.next();
   }
 
-  const userId = req.auth?.user?.id;
+  const token = await getToken({
+    req: request,
+    secret: process.env.AUTH_SECRET,
+  });
 
-  if (!userId) {
-    const loginUrl = new URL("/admin/login", req.nextUrl.origin);
+  if (!token?.sub) {
+    const loginUrl = new URL("/admin/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Authors cannot manage author accounts
-  if (
-    pathname.startsWith("/admin/people") &&
-    req.auth?.user?.role !== "ADMIN"
-  ) {
-    return NextResponse.redirect(new URL("/admin", req.nextUrl.origin));
+  if (pathname.startsWith("/admin/people") && token.role !== "ADMIN") {
+    return NextResponse.redirect(new URL("/admin", request.url));
   }
 
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: ["/admin/:path*"],

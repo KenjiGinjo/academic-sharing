@@ -1,8 +1,8 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import type { UserRole } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import { authConfig } from "@/lib/auth.config";
 import { prisma } from "@/lib/prisma";
 
 const credentialsSchema = z.object({
@@ -11,18 +11,14 @@ const credentialsSchema = z.object({
 });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  trustHost: true,
-  session: { strategy: "jwt" },
-  pages: {
-    signIn: "/admin/login",
-  },
+  ...authConfig,
   providers: [
     Credentials({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      // authorize runs in Node (API route), Prisma is OK here
+      // Node runtime only — safe to use Prisma here
       async authorize(raw) {
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) return null;
@@ -45,32 +41,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    /**
-     * IMPORTANT: jwt also runs in Edge middleware.
-     * Do NOT call Prisma here — only copy claims from the user object at sign-in.
-     */
-    async jwt({ token, user }) {
-      if (user) {
-        token.sub = user.id;
-        token.email = user.email;
-        token.name = user.name;
-        token.role = user.role as UserRole;
-        token.personId = user.personId;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user && token.sub) {
-        session.user.id = token.sub;
-        session.user.email = (token.email as string) ?? session.user.email;
-        session.user.name =
-          typeof token.name === "string" ? token.name : session.user.name;
-        session.user.role = (token.role as UserRole) ?? "AUTHOR";
-        session.user.personId =
-          typeof token.personId === "string" ? token.personId : null;
-      }
-      return session;
-    },
-  },
 });
