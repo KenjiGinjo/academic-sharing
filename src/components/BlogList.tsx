@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { BlogPost } from "@/data/blogs";
+import type { BlogPostView } from "@/lib/content";
 
 export function SectionHeading({
   eyebrow,
@@ -38,7 +38,7 @@ export function BlogList({
   posts,
   compact = false,
 }: {
-  posts: BlogPost[];
+  posts: BlogPostView[];
   compact?: boolean;
 }) {
   return (

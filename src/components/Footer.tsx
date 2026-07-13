@@ -1,14 +1,18 @@
 import Link from "next/link";
+import { BrandLogo } from "./BrandLogo";
 
 export function Footer() {
   return (
     <footer className="mt-auto border-t border-border bg-surface">
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-5 py-14 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
-          <p className="font-display text-lg text-foreground">Academic Sharing</p>
+          <BrandLogo
+            className="text-lg text-foreground"
+            markClassName="h-8 w-8 text-accent-deep"
+          />
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">
-            Notes, tutorials, and people who share knowledge — a quiet academic
-            space for structured learning and everyday writing.
+            Where neural science meets intelligence — notes, tutorials, and
+            people exploring neuroscience and AI.
           </p>
         </div>
         <div>
@@ -55,14 +59,14 @@ export function Footer() {
               </a>
             </li>
             <li>
-              <span className="text-muted">Academic Sharing</span>
+              <span className="text-muted">CG NeurAI</span>
             </li>
           </ul>
         </div>
       </div>
       <div className="border-t border-border">
         <p className="mx-auto max-w-6xl px-5 py-5 text-xs text-muted sm:px-8">
-          © {new Date().getFullYear()} Academic Sharing.
+          © {new Date().getFullYear()} CG NeurAI.
         </p>
       </div>
     </footer>

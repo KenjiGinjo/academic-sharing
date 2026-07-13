@@ -1,6 +1,6 @@
-import type { Person } from "@/data/people";
+import type { PersonView } from "@/lib/content";
 
-export function PeopleGrid({ items }: { items: Person[] }) {
+export function PeopleGrid({ items }: { items: PersonView[] }) {
   return (
     <div className="grid gap-6 sm:grid-cols-2">
       {items.map((person) => (

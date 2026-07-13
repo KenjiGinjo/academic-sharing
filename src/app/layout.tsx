@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Plus_Jakarta_Sans, Source_Serif_4 } from "next/font/google";
-import { SiteShell } from "@/components/SiteShell";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -39,9 +38,7 @@ export default function RootLayout({
       lang="en"
       className={`${plusJakarta.variable} ${sourceSerif.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col font-sans">
-        <SiteShell>{children}</SiteShell>
-      </body>
+      <body className="flex min-h-full flex-col font-sans">{children}</body>
     </html>
   );
 }

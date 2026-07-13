@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { BrandLogo } from "./BrandLogo";
 
 const links = [
   { href: "/blog", label: "Blog" },
@@ -19,9 +20,10 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
         <Link
           href="/"
-          className="font-display text-lg tracking-tight text-foreground transition-colors hover:text-accent-deep sm:text-xl"
+          className="text-lg text-foreground transition-colors hover:text-accent-deep sm:text-xl"
+          aria-label="CG NeurAI home"
         >
-          Academic Sharing
+          <BrandLogo markClassName="h-8 w-8 text-accent-deep" />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">

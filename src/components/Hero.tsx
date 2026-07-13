@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLogo } from "./BrandLogo";
 
 export function Hero() {
   return (
@@ -12,14 +13,17 @@ export function Hero() {
       />
       <div className="hero-grid absolute inset-0" aria-hidden />
       <div className="relative mx-auto flex min-h-[78vh] w-full max-w-6xl flex-col justify-center px-5 py-20 sm:px-8 sm:py-28">
-        <p className="fade-up font-display text-4xl tracking-tight text-foreground sm:text-5xl md:text-6xl">
-          Academic Sharing
-        </p>
+        <div className="fade-up">
+          <BrandLogo
+            className="text-4xl text-foreground sm:text-5xl md:text-6xl"
+            markClassName="h-12 w-12 text-accent-deep sm:h-14 sm:w-14 md:h-16 md:w-16"
+          />
+        </div>
         <h1 className="fade-up-delay mt-6 max-w-2xl text-2xl font-medium leading-snug tracking-tight text-foreground sm:text-3xl md:text-4xl">
-          Notes, tutorials, and people who share knowledge.
+          Where neural science meets intelligence.
         </h1>
         <p className="fade-up-delay mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-          A quiet place for structured learning and everyday writing.
+          Notes, tutorials, and people exploring neuroscience and AI.
         </p>
         <div className="fade-up-delay mt-10 flex flex-wrap gap-3">
           <Link

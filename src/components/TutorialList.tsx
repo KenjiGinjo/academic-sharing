@@ -1,7 +1,7 @@
 import Link from "next/link";
-import type { Tutorial } from "@/data/tutorials";
+import type { TutorialView } from "@/lib/content";
 
-export function TutorialList({ items }: { items: Tutorial[] }) {
+export function TutorialList({ items }: { items: TutorialView[] }) {
   return (
     <ul className="space-y-4">
       {items.map((item) => (

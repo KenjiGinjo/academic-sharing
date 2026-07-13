@@ -102,10 +102,22 @@ body {
   margin-bottom: 0.4rem;
 }
 
-.prose-article code {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.9em;
-  background: var(--accent-soft);
-  padding: 0.1rem 0.35rem;
-  border-radius: 0.25rem;
+.bn-reader {
+  --bn-colors-editor-background: transparent;
 }
+
+.bn-reader .bn-editor {
+  padding-inline: 0.5rem;
+  background-color: transparent !important;
+}
+
+.bn-reader .bn-container {
+  background-color: transparent !important;
+}
+
+.bn-reader .bn-block-outer {
+  max-width: 42rem;
+}
+
+
+
