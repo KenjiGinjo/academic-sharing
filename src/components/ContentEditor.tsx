@@ -20,6 +20,20 @@ type ContentEditorProps = {
   minHeight?: number;
 };
 
+async function uploadFile(file: File) {
+  const body = new FormData();
+  body.append("file", file);
+  const res = await fetch("/api/upload", { method: "POST", body });
+  if (!res.ok) {
+    const data = (await res.json().catch(() => null)) as {
+      error?: string;
+    } | null;
+    throw new Error(data?.error ?? "Upload failed");
+  }
+  const data = (await res.json()) as { url: string };
+  return data.url;
+}
+
 export function ContentEditor({
   name,
   initialContent,
@@ -39,6 +53,7 @@ export function ContentEditor({
 
   const editor = useCreateBlockNote({
     initialContent: initialBlocks,
+    uploadFile,
   });
 
   useEffect(() => {
