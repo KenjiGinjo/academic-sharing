@@ -12,9 +12,6 @@ export default async function AdminLoginPage() {
         <h1 className="text-2xl font-medium tracking-tight">Admin login</h1>
         <p className="mt-2 text-sm text-muted">Sign in to manage content.</p>
         <LoginForm />
-        <p className="mt-4 text-xs text-muted">
-          admin@academic.local / admin123
-        </p>
       </div>
     </div>
   );
