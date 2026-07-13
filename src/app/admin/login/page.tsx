@@ -2,28 +2,20 @@ import { LoginForm } from "@/components/admin/LoginForm";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-export default async function AdminLoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ error?: string }>;
-}) {
+export default async function AdminLoginPage() {
   const session = await auth();
   if (session?.user?.id) redirect("/admin");
 
-  const params = await searchParams;
-
   return (
-    <div className="mx-auto max-w-md rounded-lg border border-border bg-surface p-8 shadow-sm">
-      <h1 className="text-2xl font-medium tracking-tight">Admin login</h1>
-      <p className="mt-2 text-sm text-muted">
-        Admins manage authors. Authors sign in here to publish their own posts.
-      </p>
-      <LoginForm error={Boolean(params.error)} />
-      <p className="mt-4 text-xs text-muted">
-        Demo admin: admin@academic.local / admin123
-        <br />
-        Demo author: avery@academic.local / author123
-      </p>
+    <div className="flex min-h-full items-center justify-center bg-[#f4f5f3] px-5 py-16">
+      <div className="w-full max-w-md rounded-lg border border-border bg-surface p-8">
+        <h1 className="text-2xl font-medium tracking-tight">Admin login</h1>
+        <p className="mt-2 text-sm text-muted">Sign in to manage content.</p>
+        <LoginForm />
+        <p className="mt-4 text-xs text-muted">
+          admin@academic.local / admin123
+        </p>
+      </div>
     </div>
   );
 }
