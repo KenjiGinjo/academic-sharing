@@ -29,6 +29,7 @@ export async function saveAuthorAction(formData: FormData) {
   const initials =
     String(formData.get("initials") ?? "").trim() || initialsFromName(name);
   const sortOrder = Number(formData.get("sortOrder") ?? 0) || 0;
+  const avatarUrl = String(formData.get("avatarUrl") ?? "").trim() || null;
   const github = String(formData.get("github") ?? "").trim() || null;
   const website = String(formData.get("website") ?? "").trim() || null;
   const x = String(formData.get("x") ?? "").trim() || null;
@@ -62,6 +63,7 @@ export async function saveAuthorAction(formData: FormData) {
           role: roleTitle,
           bio,
           initials,
+          avatarUrl,
           sortOrder,
           github,
           website,
@@ -122,6 +124,7 @@ export async function saveAuthorAction(formData: FormData) {
           role: roleTitle,
           bio,
           initials,
+          avatarUrl,
           sortOrder,
           github,
           website,

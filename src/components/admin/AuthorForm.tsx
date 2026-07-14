@@ -1,4 +1,5 @@
 import { saveAuthorAction } from "@/app/admin/actions";
+import { AuthorAvatarField } from "@/components/admin/AuthorAvatarField";
 import type { Person, User } from "@prisma/client";
 
 type AuthorFormProps = {
@@ -16,6 +17,7 @@ export function AuthorForm({ person }: AuthorFormProps) {
       <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
         Public profile
       </h2>
+      <AuthorAvatarField initialUrl={person?.avatarUrl} />
       <Field label="Name" name="name" defaultValue={person?.name} required />
       <Field
         label="Title / role label"

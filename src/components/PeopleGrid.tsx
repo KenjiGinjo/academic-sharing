@@ -9,10 +9,19 @@ export function PeopleGrid({ items }: { items: PersonView[] }) {
           className="flex gap-5 border-b border-border pb-6 sm:border-0 sm:pb-0"
         >
           <div
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-semibold text-accent-deep"
+            className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent-soft text-sm font-semibold text-accent-deep"
             aria-hidden
           >
-            {person.initials}
+            {person.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={person.avatarUrl}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              person.initials
+            )}
           </div>
           <div>
             <h3 className="text-lg font-medium tracking-tight text-foreground">

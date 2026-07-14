@@ -9,6 +9,7 @@ export type PersonView = {
   role: string;
   bio: string;
   initials: string;
+  avatarUrl?: string | null;
   links: PersonLink[];
 };
 
@@ -57,6 +58,7 @@ export function toPersonView(person: Person): PersonView {
     role: person.role,
     bio: person.bio,
     initials: person.initials,
+    avatarUrl: person.avatarUrl,
     links: personLinks(person),
   };
 }

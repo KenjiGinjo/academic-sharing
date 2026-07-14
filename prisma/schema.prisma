@@ -43,6 +43,7 @@ model Person {
   role      String
   bio       String
   initials  String
+  avatarUrl String?
   sortOrder Int      @default(0)
   github    String?
   website   String?
