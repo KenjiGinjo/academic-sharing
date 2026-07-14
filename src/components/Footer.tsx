@@ -4,7 +4,7 @@ import { BrandLogo } from "./BrandLogo";
 export function Footer() {
   return (
     <footer className="mt-auto border-t border-border bg-surface">
-      <div className="mx-auto grid w-full max-w-6xl gap-10 px-5 py-14 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr]">
+      {/* <div className="mx-auto grid w-full max-w-6xl gap-10 px-5 py-14 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <BrandLogo
             className="text-lg text-foreground"
@@ -63,7 +63,7 @@ export function Footer() {
             </li>
           </ul>
         </div>
-      </div>
+      </div> */}
       <div className="border-t border-border">
         <p className="mx-auto max-w-6xl px-5 py-5 text-xs text-muted sm:px-8">
           © {new Date().getFullYear()} CG NeurAI.
