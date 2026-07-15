@@ -24,6 +24,13 @@ enum TutorialLevel {
   Advanced
 }
 
+enum PublicationType {
+  JOURNAL
+  CONFERENCE
+  PREPRINT
+  OTHER
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -38,20 +45,103 @@ model User {
 }
 
 model Person {
-  id        String   @id @default(cuid())
-  name      String
-  role      String
-  bio       String
-  initials  String
-  avatarUrl String?
-  sortOrder Int      @default(0)
-  github    String?
-  website   String?
-  x         String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User?
-  posts     Post[]
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  name           String
+  role           String
+  bio            String
+  about          String?  @db.Text
+  initials       String
+  avatarUrl      String?
+  sortOrder      Int      @default(0)
+  github         String?
+  website        String?
+  x              String?
+  emailPublic    String?
+  googleScholar  String?
+  cvUrl          String?
+  profileEnabled Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User?
+  posts          Post[]
+  interests      PersonInterest[]
+  publications   PersonPublication[]
+  competitions   PersonCompetition[]
+  applications   PersonApplication[]
+  patents        PersonPatent[]
+}
+
+model PersonInterest {
+  id        String @id @default(cuid())
+  personId  String
+  person    Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  label     String
+  sortOrder Int    @default(0)
+
+  @@index([personId, sortOrder])
+}
+
+model PersonPublication {
+  id        String          @id @default(cuid())
+  personId  String
+  person    Person          @relation(fields: [personId], references: [id], onDelete: Cascade)
+  title     String
+  authors   String
+  venue     String
+  year      Int?
+  type      PublicationType @default(OTHER)
+  url       String?
+  doi       String?
+  highlight Boolean         @default(false)
+  sortOrder Int             @default(0)
+
+  @@index([personId, type, sortOrder])
+}
+
+model PersonCompetition {
+  id          String  @id @default(cuid())
+  personId    String
+  person      Person  @relation(fields: [personId], references: [id], onDelete: Cascade)
+  name        String
+  award       String?
+  year        Int?
+  description String?
+  url         String?
+  sortOrder   Int     @default(0)
+
+  @@index([personId, sortOrder])
+}
+
+model PersonApplication {
+  id             String  @id @default(cuid())
+  personId       String
+  person         Person  @relation(fields: [personId], references: [id], onDelete: Cascade)
+  name           String
+  kind           String?
+  summary        String
+  url            String?
+  imageUrl       String?
+  note           String?
+  updatedAtLabel String?
+  sortOrder      Int     @default(0)
+
+  @@index([personId, sortOrder])
+}
+
+model PersonPatent {
+  id          String  @id @default(cuid())
+  personId    String
+  person      Person  @relation(fields: [personId], references: [id], onDelete: Cascade)
+  title       String
+  status      String?
+  number      String?
+  year        Int?
+  description String?
+  url         String?
+  sortOrder   Int     @default(0)
+
+  @@index([personId, sortOrder])
 }
 
 model Post {
@@ -63,6 +153,7 @@ model Post {
   content     String            @default("") @db.Text
   level       TutorialLevel?
   tags        String[]          @default([])
+  featured    Boolean           @default(false)
   published   Boolean           @default(false)
   publishedAt DateTime?
   authorId    String?
@@ -73,6 +164,7 @@ model Post {
 
   @@index([type, published, publishedAt])
   @@index([authorId])
+  @@index([featured, published, publishedAt])
 }
 
 model TutorialChapter {

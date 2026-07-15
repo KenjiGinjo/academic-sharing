@@ -13,6 +13,9 @@ export default async function AdminConsoleLayout({
   const nav = [
     { href: "/admin", label: "Dashboard" },
     ...(isAdminUser ? [{ href: "/admin/people", label: "Authors" }] : []),
+    ...(!isAdminUser && session.user.personId
+      ? [{ href: "/admin/profile", label: "My profile" }]
+      : []),
     { href: "/admin/blogs", label: "Blogs" },
     { href: "/admin/tutorials", label: "Tutorials" },
   ];

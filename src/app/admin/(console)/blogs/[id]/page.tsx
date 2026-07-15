@@ -36,6 +36,7 @@ export default async function EditBlogPage({ params }: Props) {
             tags: blog.tags,
             authorId: blog.authorId,
             published: blog.published,
+            featured: blog.featured,
             publishedAt: blog.publishedAt,
           }}
         />

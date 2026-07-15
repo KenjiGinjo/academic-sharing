@@ -65,6 +65,27 @@ body {
   }
 }
 
+.carousel-slide {
+  animation: carousel-slide 0.45s ease-out both;
+}
+
+@keyframes carousel-slide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-slide {
+    animation: none;
+  }
+}
+
 .prose-article {
   max-width: 42rem;
   line-height: 1.75;

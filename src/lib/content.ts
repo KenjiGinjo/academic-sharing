@@ -1,16 +1,107 @@
-import type { Person, Post, TutorialChapter } from "@prisma/client";
+import type {
+  Person,
+  PersonApplication,
+  PersonCompetition,
+  PersonInterest,
+  PersonPatent,
+  PersonPublication,
+  Post,
+  TutorialChapter,
+} from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { profilePath, profilePublicUrl } from "@/lib/profile";
 
 export type PersonLink = { label: string; href: string };
 
+export type AuthorRef = {
+  id: string;
+  name: string;
+  role?: string;
+  initials: string;
+  avatarUrl?: string | null;
+  slug?: string | null;
+  profileEnabled?: boolean;
+  href?: string | null;
+};
+
 export type PersonView = {
   id: string;
+  slug: string;
   name: string;
   role: string;
   bio: string;
   initials: string;
   avatarUrl?: string | null;
+  profileEnabled: boolean;
+  websiteHref: string | null;
   links: PersonLink[];
+};
+
+export type ProfileView = {
+  id: string;
+  slug: string;
+  name: string;
+  role: string;
+  bio: string;
+  about: string | null;
+  initials: string;
+  avatarUrl: string | null;
+  emailPublic: string | null;
+  googleScholar: string | null;
+  cvUrl: string | null;
+  github: string | null;
+  x: string | null;
+  website: string | null;
+  interests: { label: string }[];
+  publications: {
+    title: string;
+    authors: string;
+    venue: string;
+    year: number | null;
+    type: string;
+    url: string | null;
+    doi: string | null;
+    highlight: boolean;
+  }[];
+  competitions: {
+    name: string;
+    award: string | null;
+    year: number | null;
+    description: string | null;
+    url: string | null;
+  }[];
+  applications: {
+    name: string;
+    kind: string | null;
+    summary: string;
+    url: string | null;
+    imageUrl: string | null;
+    note: string | null;
+    updatedAtLabel: string | null;
+  }[];
+  patents: {
+    title: string;
+    status: string | null;
+    number: string | null;
+    year: number | null;
+    description: string | null;
+    url: string | null;
+  }[];
+  blogs: {
+    slug: string;
+    title: string;
+    excerpt: string;
+    date: string;
+    tags: string[];
+  }[];
+  tutorials: {
+    slug: string;
+    title: string;
+    description: string;
+    level: string;
+    chapterCount: number;
+    tags: string[];
+  }[];
 };
 
 export type BlogPostView = {
@@ -21,7 +112,8 @@ export type BlogPostView = {
   date: string;
   tags: string[];
   content: string;
-  authorName?: string;
+  featured: boolean;
+  author?: AuthorRef | null;
 };
 
 export type TutorialChapterView = {
@@ -40,32 +132,151 @@ export type TutorialView = {
   tags: string[];
   chapterCount: number;
   chapters: TutorialChapterView[];
-  authorName?: string;
+  featured: boolean;
+  author?: AuthorRef | null;
 };
+
+export type CarouselItemView = {
+  kind: "blog" | "tutorial";
+  slug: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  href: string;
+  author?: AuthorRef | null;
+};
+
+function toAuthorRef(person: Person | null | undefined): AuthorRef | null {
+  if (!person) return null;
+  const enabled = person.profileEnabled && Boolean(person.slug);
+  return {
+    id: person.id,
+    name: person.name,
+    role: person.role,
+    initials: person.initials,
+    avatarUrl: person.avatarUrl,
+    slug: person.slug,
+    profileEnabled: person.profileEnabled,
+    href: enabled && person.slug ? profilePath(person.slug) : null,
+  };
+}
+
+function personWebsiteHref(person: Person): string | null {
+  if (person.profileEnabled && person.slug) {
+    return profilePublicUrl(person.slug);
+  }
+  return person.website || null;
+}
 
 function personLinks(person: Person): PersonLink[] {
   const links: PersonLink[] = [];
   if (person.github) links.push({ label: "GitHub", href: person.github });
   if (person.x) links.push({ label: "X", href: person.x });
-  if (person.website) links.push({ label: "Web", href: person.website });
   return links;
 }
 
 export function toPersonView(person: Person): PersonView {
   return {
     id: person.id,
+    slug: person.slug,
     name: person.name,
     role: person.role,
     bio: person.bio,
     initials: person.initials,
     avatarUrl: person.avatarUrl,
+    profileEnabled: person.profileEnabled,
+    websiteHref: personWebsiteHref(person),
     links: personLinks(person),
   };
 }
 
-function toBlogView(
-  post: Post & { author?: Person | null },
-): BlogPostView {
+type ProfilePerson = Person & {
+  interests: PersonInterest[];
+  publications: PersonPublication[];
+  competitions: PersonCompetition[];
+  applications: PersonApplication[];
+  patents: PersonPatent[];
+  posts: (Post & { chapters: TutorialChapter[] })[];
+};
+
+export function toProfileView(person: ProfilePerson): ProfileView {
+  const blogs = person.posts
+    .filter((post) => post.type === "BLOG")
+    .map((post) => ({
+      slug: post.slug,
+      title: post.title,
+      excerpt: post.excerpt,
+      date: (post.publishedAt ?? post.createdAt).toISOString(),
+      tags: post.tags,
+    }));
+
+  const tutorials = person.posts
+    .filter((post) => post.type === "TUTORIAL")
+    .map((post) => ({
+      slug: post.slug,
+      title: post.title,
+      description: post.excerpt,
+      level: post.level ?? "Beginner",
+      chapterCount: post.chapters.length,
+      tags: post.tags,
+    }));
+
+  return {
+    id: person.id,
+    slug: person.slug,
+    name: person.name,
+    role: person.role,
+    bio: person.bio,
+    about: person.about,
+    initials: person.initials,
+    avatarUrl: person.avatarUrl,
+    emailPublic: person.emailPublic,
+    googleScholar: person.googleScholar,
+    cvUrl: person.cvUrl,
+    github: person.github,
+    x: person.x,
+    website: person.website,
+    interests: person.interests.map((item) => ({ label: item.label })),
+    publications: person.publications.map((item) => ({
+      title: item.title,
+      authors: item.authors,
+      venue: item.venue,
+      year: item.year,
+      type: item.type,
+      url: item.url,
+      doi: item.doi,
+      highlight: item.highlight,
+    })),
+    competitions: person.competitions.map((item) => ({
+      name: item.name,
+      award: item.award,
+      year: item.year,
+      description: item.description,
+      url: item.url,
+    })),
+    applications: person.applications.map((item) => ({
+      name: item.name,
+      kind: item.kind,
+      summary: item.summary,
+      url: item.url,
+      imageUrl: item.imageUrl,
+      note: item.note,
+      updatedAtLabel: item.updatedAtLabel,
+    })),
+    patents: person.patents.map((item) => ({
+      title: item.title,
+      status: item.status,
+      number: item.number,
+      year: item.year,
+      description: item.description,
+      url: item.url,
+    })),
+    blogs,
+    tutorials,
+  };
+}
+
+function toBlogView(post: Post & { author?: Person | null }): BlogPostView {
   return {
     id: post.id,
     slug: post.slug,
@@ -74,7 +285,8 @@ function toBlogView(
     date: (post.publishedAt ?? post.createdAt).toISOString(),
     tags: post.tags,
     content: post.content,
-    authorName: post.author?.name,
+    featured: post.featured,
+    author: toAuthorRef(post.author),
   };
 }
 
@@ -95,7 +307,8 @@ function toTutorialView(
       title: chapter.title,
       content: chapter.content,
     })),
-    authorName: post.author?.name,
+    featured: post.featured,
+    author: toAuthorRef(post.author),
   };
 }
 
@@ -104,6 +317,25 @@ export async function listPeople() {
     orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
   });
   return people.map(toPersonView);
+}
+
+export async function getPersonProfile(slug: string) {
+  const person = await prisma.person.findFirst({
+    where: { slug, profileEnabled: true },
+    include: {
+      interests: { orderBy: { sortOrder: "asc" } },
+      publications: { orderBy: [{ year: "desc" }, { sortOrder: "asc" }] },
+      competitions: { orderBy: [{ year: "desc" }, { sortOrder: "asc" }] },
+      applications: { orderBy: { sortOrder: "asc" } },
+      patents: { orderBy: [{ year: "desc" }, { sortOrder: "asc" }] },
+      posts: {
+        where: { published: true },
+        include: { chapters: { orderBy: { sortOrder: "asc" } } },
+        orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+      },
+    },
+  });
+  return person ? toProfileView(person) : null;
 }
 
 export async function listPublishedBlogs() {
@@ -146,6 +378,36 @@ export async function getPublishedTutorial(slug: string) {
   return post ? toTutorialView(post) : null;
 }
 
+/** Mixed recent/featured posts for homepage carousel (plan A). */
+export async function listCarouselItems(limit = 6): Promise<CarouselItemView[]> {
+  const featured = await prisma.post.findMany({
+    where: { published: true, featured: true },
+    include: { author: true },
+    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+    take: limit,
+  });
+
+  const source =
+    featured.length > 0
+      ? featured
+      : await prisma.post.findMany({
+          where: { published: true },
+          include: { author: true },
+          orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+          take: limit,
+        });
+
+  return source.map((post) => ({
+    kind: post.type === "BLOG" ? "blog" : "tutorial",
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt,
+    date: (post.publishedAt ?? post.createdAt).toISOString(),
+    href: post.type === "BLOG" ? `/blog/${post.slug}` : `/tutorial/${post.slug}`,
+    author: toAuthorRef(post.author),
+  }));
+}
+
 export function slugify(input: string) {
   return input
     .toLowerCase()
@@ -170,4 +432,21 @@ export function parseTags(raw: string) {
     .split(/[,，]/)
     .map((tag) => tag.trim())
     .filter(Boolean);
+}
+
+export async function ensureUniquePersonSlug(base: string, excludeId?: string) {
+  const root = slugify(base) || "person";
+  let candidate = root;
+  let n = 2;
+  while (true) {
+    const existing = await prisma.person.findFirst({
+      where: {
+        slug: candidate,
+        ...(excludeId ? { NOT: { id: excludeId } } : {}),
+      },
+      select: { id: true },
+    });
+    if (!existing) return candidate;
+    candidate = `${root}-${n++}`;
+  }
 }

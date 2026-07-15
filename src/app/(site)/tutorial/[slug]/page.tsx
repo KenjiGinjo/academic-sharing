@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AuthorBadge } from "@/components/AuthorBadge";
 import { ContentBody } from "@/components/ContentBody";
 import { getPublishedTutorial } from "@/lib/content";
 
@@ -53,16 +54,20 @@ export default async function TutorialDetailPage({ params }: Props) {
 
       <article>
         <header className="border-b border-border pb-8">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
             <span className="rounded-sm bg-accent-soft px-2 py-0.5 font-medium text-accent-deep">
               {tutorial.level}
             </span>
             <span>{tutorial.chapterCount} chapters</span>
-            {tutorial.authorName ? <span>By {tutorial.authorName}</span> : null}
             {tutorial.tags.map((tag) => (
               <span key={tag}>#{tag}</span>
             ))}
           </div>
+          {tutorial.author ? (
+            <div className="mt-4">
+              <AuthorBadge author={tutorial.author} showRole size="md" />
+            </div>
+          ) : null}
           <h1 className="mt-4 font-display text-3xl tracking-tight text-foreground sm:text-4xl">
             {tutorial.title}
           </h1>

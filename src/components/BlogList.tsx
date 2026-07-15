@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AuthorBadge } from "@/components/AuthorBadge";
 import type { BlogPostView } from "@/lib/content";
 
 export function SectionHeading({
@@ -44,27 +45,30 @@ export function BlogList({
   return (
     <ul className="divide-y divide-border border-y border-border">
       {posts.map((post) => (
-        <li key={post.slug}>
-          <Link
-            href={`/blog/${post.slug}`}
-            className="group block py-6 transition hover:bg-accent-soft/40"
-          >
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
-              <h3 className="text-lg font-medium tracking-tight text-foreground group-hover:text-accent-deep">
+        <li key={post.slug} className="py-6 transition hover:bg-accent-soft/40">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+            <h3 className="text-lg font-medium tracking-tight text-foreground">
+              <Link
+                href={`/blog/${post.slug}`}
+                className="hover:text-accent-deep"
+              >
                 {post.title}
-              </h3>
-              <time className="shrink-0 text-sm text-muted" dateTime={post.date}>
-                {formatDate(post.date)}
-              </time>
-            </div>
-            <p
-              className={`mt-2 max-w-3xl text-sm leading-relaxed text-muted ${
-                compact ? "line-clamp-2" : ""
-              }`}
-            >
-              {post.excerpt}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
+              </Link>
+            </h3>
+            <time className="shrink-0 text-sm text-muted" dateTime={post.date}>
+              {formatDate(post.date)}
+            </time>
+          </div>
+          <p
+            className={`mt-2 max-w-3xl text-sm leading-relaxed text-muted ${
+              compact ? "line-clamp-2" : ""
+            }`}
+          >
+            {post.excerpt}
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+            <AuthorBadge author={post.author} />
+            <div className="flex flex-wrap gap-2">
               {post.tags.map((tag) => (
                 <span
                   key={tag}
@@ -74,7 +78,7 @@ export function BlogList({
                 </span>
               ))}
             </div>
-          </Link>
+          </div>
         </li>
       ))}
     </ul>

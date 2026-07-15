@@ -51,6 +51,17 @@ export async function assertCanEditPost(session: AppSession, postId: string) {
   }
 }
 
+/** Admin any person; Author only own personId. */
+export async function assertCanEditPerson(
+  session: AppSession,
+  personId: string,
+) {
+  if (isAdmin(session)) return;
+  if (session.user.personId !== personId) {
+    redirect("/admin");
+  }
+}
+
 export function authorScope(session: AppSession) {
   if (isAdmin(session)) return {};
   return { authorId: session.user.personId ?? "__none__" };

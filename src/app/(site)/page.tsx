@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { BlogList, SectionHeading } from "@/components/BlogList";
+import { FeaturedCarousel } from "@/components/FeaturedCarousel";
 import { Hero } from "@/components/Hero";
 import { PeopleGrid } from "@/components/PeopleGrid";
-import { Pillars } from "@/components/Pillars";
 import { TutorialList } from "@/components/TutorialList";
 import {
+  listCarouselItems,
   listPeople,
   listPublishedBlogs,
   listPublishedTutorials,
@@ -13,16 +13,17 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [blogs, tutorials, people] = await Promise.all([
+  const [blogs, tutorials, people, carousel] = await Promise.all([
     listPublishedBlogs(),
     listPublishedTutorials(),
     listPeople(),
+    listCarouselItems(6),
   ]);
 
   return (
     <>
       <Hero />
-      <Pillars />
+      <FeaturedCarousel items={carousel} />
 
       <section className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
         <SectionHeading
@@ -53,15 +54,7 @@ export default async function HomePage() {
           href="/people"
           linkLabel="Meet everyone"
         />
-        <PeopleGrid items={people.slice(0, 4)} />
-        <div className="mt-10">
-          <Link
-            href="/people"
-            className="text-sm font-medium text-accent-deep hover:text-accent"
-          >
-            View the full directory →
-          </Link>
-        </div>
+        <PeopleGrid items={people.slice(0, 3)} />
       </section>
     </>
   );

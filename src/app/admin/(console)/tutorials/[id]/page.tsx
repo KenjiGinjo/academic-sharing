@@ -39,6 +39,7 @@ export default async function EditTutorialPage({ params }: Props) {
             tags: tutorial.tags,
             authorId: tutorial.authorId,
             published: tutorial.published,
+            featured: tutorial.featured,
             publishedAt: tutorial.publishedAt,
             chapters: tutorial.chapters.map((chapter) => ({
               title: chapter.title,

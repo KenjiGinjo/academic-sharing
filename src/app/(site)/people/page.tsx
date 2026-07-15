@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "People",
-  description: "Fixed contributors on Academic Sharing.",
+  description: "Researchers and writers in the CG NeurAI directory.",
 };
 
 export default async function PeoplePage() {
@@ -17,11 +17,11 @@ export default async function PeoplePage() {
     <div className="mx-auto w-full max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
       <SectionHeading
         eyebrow="People"
-        title="Writers and builders in the directory"
+        title="Researchers and builders"
       />
-      <p className="mb-10 max-w-2xl text-base leading-relaxed text-muted">
-        A fixed set of contributors managed by admins — roles, short bios, and
-        optional links.
+      <p className="mb-12 max-w-2xl text-base leading-relaxed text-muted">
+        Profiles managed in the admin console — name, role, bio, and a personal
+        academic site when enabled.
       </p>
       <PeopleGrid items={people} />
     </div>

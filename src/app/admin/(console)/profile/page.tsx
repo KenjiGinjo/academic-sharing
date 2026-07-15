@@ -1,15 +1,16 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { AuthorForm } from "@/components/admin/AuthorForm";
-import { requireAdmin } from "@/lib/permissions";
+import { requireUser } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
-type Props = { params: Promise<{ id: string }> };
+export default async function MyProfilePage() {
+  const session = await requireUser();
+  if (!session.user.personId) {
+    redirect("/admin");
+  }
 
-export default async function EditAuthorPage({ params }: Props) {
-  await requireAdmin();
-  const { id } = await params;
   const person = await prisma.person.findUnique({
-    where: { id },
+    where: { id: session.user.personId },
     include: {
       user: true,
       interests: { orderBy: { sortOrder: "asc" } },
@@ -19,12 +20,17 @@ export default async function EditAuthorPage({ params }: Props) {
       patents: { orderBy: { sortOrder: "asc" } },
     },
   });
-  if (!person) notFound();
+  if (!person) redirect("/admin");
 
   return (
     <div>
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="text-2xl font-medium tracking-tight">Edit author</h1>
+        <div>
+          <h1 className="text-2xl font-medium tracking-tight">My profile</h1>
+          <p className="mt-1 text-sm text-muted">
+            Update your public academic page and directory card.
+          </p>
+        </div>
         {person.profileEnabled ? (
           <a
             href={`/people/${person.slug}`}
@@ -37,7 +43,7 @@ export default async function EditAuthorPage({ params }: Props) {
         ) : null}
       </div>
       <div className="mt-6">
-        <AuthorForm person={person} />
+        <AuthorForm person={person} mode="self" />
       </div>
     </div>
   );

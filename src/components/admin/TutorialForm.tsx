@@ -21,6 +21,7 @@ type TutorialFormPost = {
   tags: string[];
   authorId: string | null;
   published: boolean;
+  featured: boolean;
   publishedAt: Date | null;
   chapters: { title: string; slug: string; content: string }[];
 };
@@ -137,6 +138,14 @@ export function TutorialForm({
             defaultChecked={post?.published ?? false}
           />
           <span>Published</span>
+        </label>
+        <label className="flex items-end gap-2 pb-2 text-sm">
+          <input
+            type="checkbox"
+            name="featured"
+            defaultChecked={post?.featured ?? false}
+          />
+          <span>Featured (homepage carousel priority)</span>
         </label>
       </div>
 

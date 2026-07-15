@@ -13,6 +13,7 @@ type BlogFormPost = {
   tags: string[];
   authorId: string | null;
   published: boolean;
+  featured: boolean;
   publishedAt: Date | null;
 };
 
@@ -98,6 +99,14 @@ export function BlogForm({
             defaultChecked={post?.published ?? false}
           />
           <span>Published</span>
+        </label>
+        <label className="flex items-end gap-2 pb-2 text-sm">
+          <input
+            type="checkbox"
+            name="featured"
+            defaultChecked={post?.featured ?? false}
+          />
+          <span>Featured (homepage carousel priority)</span>
         </label>
       </div>
       <button
