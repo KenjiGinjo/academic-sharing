@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { saveAuthorAction, saveOwnProfileAction } from "@/app/admin/actions";
 import { AcademicFields } from "@/components/admin/AcademicFields";
 import { AuthorAvatarField } from "@/components/admin/AuthorAvatarField";
+import { SavedBanner, SubmitButton } from "@/components/admin/FormFeedback";
 import type {
   Person,
   PersonApplication,
@@ -35,6 +37,16 @@ export function AuthorForm({ person, mode = "admin" }: AuthorFormProps) {
       action={action}
       className="space-y-8 rounded-lg border border-border bg-surface p-6"
     >
+      <Suspense fallback={null}>
+        <SavedBanner
+          message={
+            mode === "self"
+              ? "Profile saved successfully."
+              : "Author saved successfully."
+          }
+        />
+      </Suspense>
+
       {person ? <input type="hidden" name="id" value={person.id} /> : null}
 
       <section className="space-y-4">
@@ -175,12 +187,9 @@ export function AuthorForm({ person, mode = "admin" }: AuthorFormProps) {
         </section>
       ) : null}
 
-      <button
-        type="submit"
-        className="rounded bg-accent px-4 py-2.5 text-sm font-medium text-white hover:bg-accent-deep"
-      >
-        {mode === "self" ? "Save profile" : "Save author"}
-      </button>
+      <SubmitButton
+        idleLabel={mode === "self" ? "Save profile" : "Save author"}
+      />
     </form>
   );
 }

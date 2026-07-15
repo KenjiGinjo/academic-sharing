@@ -299,7 +299,7 @@ export async function saveAuthorAction(formData: FormData) {
 
     await replaceAcademicData(personId, formData);
     revalidatePersonPaths(slug);
-    redirect(`/admin/people/${personId}`);
+    redirect(`/admin/people/${personId}?saved=1`);
   }
 
   if (!password || password.length < 6) {
@@ -326,7 +326,7 @@ export async function saveAuthorAction(formData: FormData) {
 
   await replaceAcademicData(created.id, formData);
   revalidatePersonPaths(slug);
-  redirect(`/admin/people/${created.id}`);
+  redirect(`/admin/people/${created.id}?saved=1`);
 }
 
 /** Author updates own academic profile (no login account fields). */
@@ -368,7 +368,7 @@ export async function saveOwnProfileAction(formData: FormData) {
 
   await replaceAcademicData(personId, formData);
   revalidatePersonPaths(slug);
-  redirect("/admin/profile");
+  redirect("/admin/profile?saved=1");
 }
 
 export async function deleteAuthorAction(formData: FormData) {
