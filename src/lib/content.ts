@@ -87,21 +87,6 @@ export type ProfileView = {
     description: string | null;
     url: string | null;
   }[];
-  blogs: {
-    slug: string;
-    title: string;
-    excerpt: string;
-    date: string;
-    tags: string[];
-  }[];
-  tutorials: {
-    slug: string;
-    title: string;
-    description: string;
-    level: string;
-    chapterCount: number;
-    tags: string[];
-  }[];
 };
 
 export type BlogPostView = {
@@ -196,31 +181,9 @@ type ProfilePerson = Person & {
   competitions: PersonCompetition[];
   applications: PersonApplication[];
   patents: PersonPatent[];
-  posts: (Post & { chapters: TutorialChapter[] })[];
 };
 
 export function toProfileView(person: ProfilePerson): ProfileView {
-  const blogs = person.posts
-    .filter((post) => post.type === "BLOG")
-    .map((post) => ({
-      slug: post.slug,
-      title: post.title,
-      excerpt: post.excerpt,
-      date: (post.publishedAt ?? post.createdAt).toISOString(),
-      tags: post.tags,
-    }));
-
-  const tutorials = person.posts
-    .filter((post) => post.type === "TUTORIAL")
-    .map((post) => ({
-      slug: post.slug,
-      title: post.title,
-      description: post.excerpt,
-      level: post.level ?? "Beginner",
-      chapterCount: post.chapters.length,
-      tags: post.tags,
-    }));
-
   return {
     id: person.id,
     slug: person.slug,
@@ -271,8 +234,6 @@ export function toProfileView(person: ProfilePerson): ProfileView {
       description: item.description,
       url: item.url,
     })),
-    blogs,
-    tutorials,
   };
 }
 
@@ -328,11 +289,6 @@ export async function getPersonProfile(slug: string) {
       competitions: { orderBy: [{ year: "desc" }, { sortOrder: "asc" }] },
       applications: { orderBy: { sortOrder: "asc" } },
       patents: { orderBy: [{ year: "desc" }, { sortOrder: "asc" }] },
-      posts: {
-        where: { published: true },
-        include: { chapters: { orderBy: { sortOrder: "asc" } } },
-        orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
-      },
     },
   });
   return person ? toProfileView(person) : null;

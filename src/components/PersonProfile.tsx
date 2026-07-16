@@ -1,6 +1,4 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
-import { formatDate } from "@/components/BlogList";
 import type { ProfileView } from "@/lib/content";
 
 const PUB_LABELS: Record<string, string> = {
@@ -33,12 +31,6 @@ export function PersonProfile({ profile }: { profile: ProfileView }) {
       show: profile.applications.length > 0,
     },
     { id: "patents", label: "Patents", show: profile.patents.length > 0 },
-    { id: "blog", label: "Blog", show: profile.blogs.length > 0 },
-    {
-      id: "tutorials",
-      label: "Tutorials",
-      show: profile.tutorials.length > 0,
-    },
   ].filter((item) => item.show);
 
   const pubsByType = PUB_ORDER.map((type) => ({
@@ -370,84 +362,6 @@ export function PersonProfile({ profile }: { profile: ProfileView }) {
                       {item.description}
                     </p>
                   ) : null}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        {profile.blogs.length ? (
-          <section id="blog" className="mt-14 scroll-mt-24">
-            <SectionTitle>Blog</SectionTitle>
-            <ul className="mt-6 divide-y divide-border border-y border-border">
-              {profile.blogs.map((post) => (
-                <li key={post.slug} className="py-5">
-                  <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-                    <h3 className="text-base font-medium text-foreground">
-                      <Link
-                        href={`/blog/${post.slug}`}
-                        className="hover:text-accent-deep"
-                      >
-                        {post.title}
-                      </Link>
-                    </h3>
-                    <time
-                      className="shrink-0 text-sm text-muted"
-                      dateTime={post.date}
-                    >
-                      {formatDate(post.date)}
-                    </time>
-                  </div>
-                  <p className="mt-2 text-sm leading-relaxed text-muted line-clamp-2">
-                    {post.excerpt}
-                  </p>
-                  {post.tags.length ? (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {post.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-xs tracking-wide text-accent-deep/80"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        {profile.tutorials.length ? (
-          <section id="tutorials" className="mt-14 scroll-mt-24">
-            <SectionTitle>Tutorials</SectionTitle>
-            <ul className="mt-6 space-y-4">
-              {profile.tutorials.map((item) => (
-                <li
-                  key={item.slug}
-                  className="border border-border bg-surface px-5 py-5"
-                >
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
-                    <span className="rounded-sm bg-accent-soft px-2 py-0.5 font-medium text-accent-deep">
-                      {item.level}
-                    </span>
-                    <span>{item.chapterCount} chapters</span>
-                    {item.tags.map((tag) => (
-                      <span key={tag}>#{tag}</span>
-                    ))}
-                  </div>
-                  <h3 className="mt-2 text-lg font-medium text-foreground">
-                    <Link
-                      href={`/tutorial/${item.slug}`}
-                      className="hover:text-accent-deep"
-                    >
-                      {item.title}
-                    </Link>
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted line-clamp-2">
-                    {item.description}
-                  </p>
                 </li>
               ))}
             </ul>

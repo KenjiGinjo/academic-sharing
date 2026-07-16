@@ -8,7 +8,7 @@ export function TutorialList({ items }: { items: TutorialView[] }) {
       {items.map((item) => (
         <li
           key={item.slug}
-          className="border border-border bg-surface px-5 py-6 transition hover:border-accent/35 hover:bg-accent-soft/30 sm:px-7"
+          className="relative border border-border bg-surface px-5 py-6 transition hover:border-accent/35 hover:bg-accent-soft/30 sm:px-7"
         >
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
             <span className="rounded-sm bg-accent-soft px-2 py-0.5 font-medium text-accent-deep">
@@ -22,7 +22,7 @@ export function TutorialList({ items }: { items: TutorialView[] }) {
           <h3 className="mt-3 text-xl font-medium tracking-tight text-foreground">
             <Link
               href={`/tutorial/${item.slug}`}
-              className="hover:text-accent-deep"
+              className="after:absolute after:inset-0 hover:text-accent-deep"
             >
               {item.title}
             </Link>
@@ -31,7 +31,7 @@ export function TutorialList({ items }: { items: TutorialView[] }) {
             {item.description}
           </p>
           {item.author ? (
-            <div className="mt-4">
+            <div className="relative z-10 mt-4">
               <AuthorBadge author={item.author} />
             </div>
           ) : null}

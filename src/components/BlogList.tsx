@@ -45,12 +45,15 @@ export function BlogList({
   return (
     <ul className="divide-y divide-border border-y border-border">
       {posts.map((post) => (
-        <li key={post.slug} className="py-6 transition hover:bg-accent-soft/40">
+        <li
+          key={post.slug}
+          className="relative py-6 transition hover:bg-accent-soft/40"
+        >
           <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
             <h3 className="text-lg font-medium tracking-tight text-foreground">
               <Link
                 href={`/blog/${post.slug}`}
-                className="hover:text-accent-deep"
+                className="after:absolute after:inset-0 hover:text-accent-deep"
               >
                 {post.title}
               </Link>
@@ -66,7 +69,7 @@ export function BlogList({
           >
             {post.excerpt}
           </p>
-          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <div className="relative z-10 mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
             <AuthorBadge author={post.author} />
             <div className="flex flex-wrap gap-2">
               {post.tags.map((tag) => (

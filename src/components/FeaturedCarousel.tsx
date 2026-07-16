@@ -130,7 +130,7 @@ export function FeaturedCarousel({ items }: { items: CarouselItemView[] }) {
           key={animKey}
           className="carousel-slide relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end"
         >
-          <div className="min-w-0 border-l-2 border-accent pl-5 sm:pl-7">
+          <div className="relative min-w-0 border-l-2 border-accent pl-5 sm:pl-7">
             <div className="flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center rounded-md bg-accent-soft px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-deep">
                 {item.kind === "blog" ? "Blog" : "Tutorial"}
@@ -146,7 +146,7 @@ export function FeaturedCarousel({ items }: { items: CarouselItemView[] }) {
             <h3 className="mt-4 max-w-3xl font-display text-3xl leading-[1.15] tracking-tight text-foreground sm:text-4xl md:text-[2.75rem]">
               <Link
                 href={item.href}
-                className="transition-colors hover:text-accent-deep"
+                className="after:absolute after:inset-0 transition-colors hover:text-accent-deep"
               >
                 {item.title}
               </Link>
@@ -156,7 +156,7 @@ export function FeaturedCarousel({ items }: { items: CarouselItemView[] }) {
               {item.excerpt}
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <div className="relative z-10 mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
               <AuthorBadge author={item.author} size="md" showRole />
               <Link
                 href={item.href}
@@ -169,7 +169,7 @@ export function FeaturedCarousel({ items }: { items: CarouselItemView[] }) {
 
           {items.length > 1 ? (
             <nav
-              className="hidden w-44 shrink-0 flex-col gap-1 lg:flex"
+              className="relative z-10 hidden w-44 shrink-0 flex-col gap-1 lg:flex"
               aria-label="Featured items"
             >
               {items.map((slide, i) => {

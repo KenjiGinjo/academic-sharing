@@ -14,7 +14,7 @@ export function PeopleGrid({ items }: { items: PersonView[] }) {
         return (
           <article
             key={person.id}
-            className="flex h-full flex-col border-b border-border pb-10 sm:border-0 sm:pb-0"
+            className="relative flex h-full flex-col border-b border-border pb-10 sm:border-0 sm:pb-0"
           >
             <div
               className="mx-auto flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent-soft text-xl font-semibold text-accent-deep sm:h-32 sm:w-32 sm:text-2xl"
@@ -37,7 +37,7 @@ export function PeopleGrid({ items }: { items: PersonView[] }) {
                 {profileHref ? (
                   <Link
                     href={profileHref}
-                    className="transition hover:text-accent-deep"
+                    className="after:absolute after:inset-0 transition hover:text-accent-deep"
                   >
                     {person.name}
                   </Link>
@@ -53,7 +53,7 @@ export function PeopleGrid({ items }: { items: PersonView[] }) {
               </p>
 
               {person.websiteHref ? (
-                <div className="mt-6 border-t border-border pt-4">
+                <div className="relative z-10 mt-6 border-t border-border pt-4">
                   <a
                     href={person.websiteHref}
                     target={
