@@ -59,14 +59,14 @@ export function Footer() {
               </a>
             </li>
             <li>
-              <span className="text-muted">CG NeurAI</span>
+              <span className="text-muted">CG NeuroAI</span>
             </li>
           </ul>
         </div>
       </div> */}
       <div className="border-t border-border">
         <p className="mx-auto max-w-6xl px-5 py-5 text-xs text-muted sm:px-8">
-          © {new Date().getFullYear()} CG NeurAI.
+          © {new Date().getFullYear()} CG NeuroAI.
         </p>
       </div>
     </footer>

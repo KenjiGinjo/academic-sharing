@@ -22,10 +22,10 @@ export function Hero() {
             />
           </div>
           <h1 className="fade-up-delay mt-6 max-w-2xl text-2xl font-medium leading-snug tracking-tight text-foreground sm:text-3xl md:text-4xl">
-            Where neural science meets intelligence.
+            Practical Notes and Tutorials for Neuroscience and AI
           </h1>
           <p className="fade-up-delay mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-            Notes, tutorials, and people exploring neuroscience and AI.
+            Where neural science meets intelligence.
           </p>
           <div className="fade-up-delay mt-10 flex flex-wrap gap-3">
             <Link

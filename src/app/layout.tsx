@@ -21,11 +21,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Academic Sharing — Notes, tutorials, and people who share knowledge",
-    template: "%s · Academic Sharing",
+    default:
+      "CG NeuroAI — Practical Notes and Tutorials for Neuroscience and AI",
+    template: "%s · CG NeuroAI",
   },
   description:
-    "An academic-style Blog + Tutorial knowledge platform for structured learning and everyday writing.",
+    "Practical notes and tutorials for neuroscience and AI.",
 };
 
 export default function RootLayout({

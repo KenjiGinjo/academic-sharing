@@ -14,7 +14,7 @@ export function Header({ pathname = "/" }: { pathname?: string }) {
         <Link
           href="/"
           className="text-lg text-foreground transition-colors hover:text-accent-deep sm:text-xl"
-          aria-label="CG NeurAI home"
+          aria-label="CG NeuroAI home"
         >
           <BrandLogo markClassName="h-8 w-8 text-accent-deep" />
         </Link>

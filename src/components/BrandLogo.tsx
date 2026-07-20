@@ -84,7 +84,7 @@ export function BrandLogo({
         <circle cx="27.4" cy="20.4" r="1.15" fill="currentColor" />
       </svg>
       {showWordmark ? (
-        <span className="font-display tracking-tight">CG NeurAI</span>
+        <span className="font-display tracking-tight">CG NeuroAI</span>
       ) : null}
     </span>
   );
