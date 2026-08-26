@@ -1,15 +1,18 @@
 import Link from "next/link";
 import type { PersonView } from "@/lib/content";
-import { profilePath } from "@/lib/profile";
+
+function isExternalHref(href: string) {
+  return href.startsWith("http");
+}
 
 export function PeopleGrid({ items }: { items: PersonView[] }) {
   return (
     <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((person) => {
-        const profileHref =
-          person.profileEnabled && person.slug
-            ? profilePath(person.slug)
-            : null;
+        const href = person.websiteHref;
+        const external = Boolean(href && isExternalHref(href));
+        const cardLinkClass =
+          "after:absolute after:inset-0 transition hover:text-accent-deep";
 
         return (
           <article
@@ -34,13 +37,21 @@ export function PeopleGrid({ items }: { items: PersonView[] }) {
 
             <div className="mt-5 flex flex-1 flex-col text-center">
               <h3 className="font-display text-xl tracking-tight text-foreground sm:text-2xl">
-                {profileHref ? (
-                  <Link
-                    href={profileHref}
-                    className="after:absolute after:inset-0 transition hover:text-accent-deep"
-                  >
-                    {person.name}
-                  </Link>
+                {href ? (
+                  external ? (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={cardLinkClass}
+                    >
+                      {person.name}
+                    </a>
+                  ) : (
+                    <Link href={href} className={cardLinkClass}>
+                      {person.name}
+                    </Link>
+                  )
                 ) : (
                   person.name
                 )}
@@ -56,14 +67,8 @@ export function PeopleGrid({ items }: { items: PersonView[] }) {
                 <div className="relative z-10 mt-6 border-t border-border pt-4">
                   <a
                     href={person.websiteHref}
-                    target={
-                      person.websiteHref.startsWith("http") ? "_blank" : undefined
-                    }
-                    rel={
-                      person.websiteHref.startsWith("http")
-                        ? "noreferrer"
-                        : undefined
-                    }
+                    target={external ? "_blank" : undefined}
+                    rel={external ? "noreferrer" : undefined}
                     className="text-sm font-medium text-foreground/80 underline-offset-4 hover:text-accent hover:underline"
                   >
                     Website
