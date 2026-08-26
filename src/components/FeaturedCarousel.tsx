@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArticleByline } from "@/components/ArticleByline";
+import { ReadingTime } from "@/components/ReadingTime";
 import type { CarouselItemView } from "@/lib/content";
 
 export function FeaturedCarousel({ items }: { items: CarouselItemView[] }) {
@@ -145,11 +146,14 @@ export function FeaturedCarousel({ items }: { items: CarouselItemView[] }) {
               </Link>
             </h3>
 
+            <div className="mt-4">
+              <ReadingTime minutes={item.readingMinutes} />
+            </div>
+
             <div className="relative z-10 mt-5">
               <ArticleByline
                 date={item.date}
                 author={item.author}
-                readingMinutes={item.readingMinutes}
                 showRole
                 size="md"
               />

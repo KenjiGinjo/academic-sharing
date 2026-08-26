@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArticleByline } from "@/components/ArticleByline";
 import { ContentBody } from "@/components/ContentBody";
+import { ReadingTime } from "@/components/ReadingTime";
 import { getPublishedTutorial } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
@@ -57,11 +58,13 @@ export default async function TutorialDetailPage({ params }: Props) {
           <h1 className="font-display text-3xl tracking-tight text-foreground sm:text-4xl">
             {tutorial.title}
           </h1>
+          <div className="mt-4">
+            <ReadingTime minutes={tutorial.readingMinutes} />
+          </div>
           <div className="mt-5">
             <ArticleByline
               date={tutorial.date}
               author={tutorial.author}
-              readingMinutes={tutorial.readingMinutes}
               showRole
               size="md"
             />

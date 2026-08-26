@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArticleByline } from "@/components/ArticleByline";
+import { ReadingTime } from "@/components/ReadingTime";
 import type { BlogPostView } from "@/lib/content";
 
 export function SectionHeading({
@@ -57,12 +58,11 @@ export function BlogList({
               {post.title}
             </Link>
           </h3>
+          <div className="mt-2">
+            <ReadingTime minutes={post.readingMinutes} size="sm" />
+          </div>
           <div className="relative z-10 mt-3">
-            <ArticleByline
-              date={post.date}
-              author={post.author}
-              readingMinutes={post.readingMinutes}
-            />
+            <ArticleByline date={post.date} author={post.author} />
           </div>
           <p
             className={`mt-3 max-w-3xl text-sm leading-relaxed text-muted ${

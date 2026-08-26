@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArticleByline } from "@/components/ArticleByline";
+import { ReadingTime } from "@/components/ReadingTime";
 import type { TutorialView } from "@/lib/content";
 
 export function TutorialList({ items }: { items: TutorialView[] }) {
@@ -18,12 +19,11 @@ export function TutorialList({ items }: { items: TutorialView[] }) {
               {item.title}
             </Link>
           </h3>
+          <div className="mt-2">
+            <ReadingTime minutes={item.readingMinutes} size="sm" />
+          </div>
           <div className="relative z-10 mt-3">
-            <ArticleByline
-              date={item.date}
-              author={item.author}
-              readingMinutes={item.readingMinutes}
-            />
+            <ArticleByline date={item.date} author={item.author} />
           </div>
           <div className="relative z-10 mt-3 flex flex-wrap items-center gap-2 text-xs text-muted">
             <span className="rounded-sm bg-accent-soft px-2 py-0.5 font-medium text-accent-deep">

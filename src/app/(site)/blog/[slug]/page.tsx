@@ -4,6 +4,7 @@ import { ArticleBreadcrumb } from "@/components/ArticleBreadcrumb";
 import { ArticleByline, formatDate } from "@/components/ArticleByline";
 import { ArticlePager } from "@/components/ArticlePager";
 import { ContentBody } from "@/components/ContentBody";
+import { ReadingTime } from "@/components/ReadingTime";
 import { getPublishedBlog, listPublishedBlogs } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
@@ -49,11 +50,13 @@ export default async function BlogDetailPage({ params }: Props) {
           <h1 className="font-display text-3xl tracking-tight text-foreground sm:text-4xl">
             {post.title}
           </h1>
+          <div className="mt-4">
+            <ReadingTime minutes={post.readingMinutes} />
+          </div>
           <div className="mt-5">
             <ArticleByline
               date={post.date}
               author={post.author}
-              readingMinutes={post.readingMinutes}
               showRole
               size="md"
             />

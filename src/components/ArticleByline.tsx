@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { AuthorRef } from "@/lib/content";
-import { formatReadingTime } from "@/lib/reading-time";
 
 export function formatDate(date: string) {
   return new Intl.DateTimeFormat("en", {
@@ -14,29 +13,23 @@ export function formatDate(date: string) {
 export function ArticleByline({
   date,
   author,
-  readingMinutes,
   showRole = false,
   size = "sm",
 }: {
   date: string;
   author?: AuthorRef | null;
-  readingMinutes: number;
   showRole?: boolean;
   size?: "sm" | "md";
 }) {
-  const meta = (
-    <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
-      <time dateTime={date}>{formatDate(date)}</time>
-      <span aria-hidden className="text-border">
-        ·
-      </span>
-      <ReadingTimeChip minutes={readingMinutes} />
-    </p>
+  const dateEl = (
+    <time dateTime={date} className="text-sm text-muted">
+      {formatDate(date)}
+    </time>
   );
 
-  if (!author) return meta;
+  if (!author) return dateEl;
 
-  const avatarSize = size === "md" ? "h-10 w-10 text-sm" : "h-8 w-8 text-[11px]";
+  const avatarSize = size === "md" ? "h-9 w-9 text-xs" : "h-7 w-7 text-[10px]";
   const avatar = (
     <span
       className={`inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent-soft font-semibold text-accent-deep ${avatarSize}`}
@@ -66,7 +59,7 @@ export function ArticleByline({
     ) : null;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1.5">
       <div className="flex max-w-full items-center gap-2.5">
         {wrapAuthor(author.href, avatar)}
         <div className="min-w-0">
@@ -74,7 +67,7 @@ export function ArticleByline({
           {role}
         </div>
       </div>
-      {meta}
+      {dateEl}
     </div>
   );
 }
@@ -85,17 +78,5 @@ function wrapAuthor(href: string | null | undefined, children: ReactNode) {
     <Link href={href} className="hover:text-accent-deep">
       {children}
     </Link>
-  );
-}
-
-function ReadingTimeChip({ minutes }: { minutes: number }) {
-  const label = formatReadingTime(minutes);
-  return (
-    <span
-      className="inline-flex items-center rounded-md border border-border bg-surface px-1.5 py-px text-xs text-muted"
-      title={label}
-    >
-      {label}
-    </span>
   );
 }
