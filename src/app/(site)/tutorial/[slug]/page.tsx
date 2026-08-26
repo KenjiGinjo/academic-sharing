@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AuthorBadge } from "@/components/AuthorBadge";
+import { ArticleByline } from "@/components/ArticleByline";
 import { ContentBody } from "@/components/ContentBody";
 import { getPublishedTutorial } from "@/lib/content";
 
@@ -54,7 +54,19 @@ export default async function TutorialDetailPage({ params }: Props) {
 
       <article>
         <header className="border-b border-border pb-8">
-          <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
+          <h1 className="font-display text-3xl tracking-tight text-foreground sm:text-4xl">
+            {tutorial.title}
+          </h1>
+          <div className="mt-5">
+            <ArticleByline
+              date={tutorial.date}
+              author={tutorial.author}
+              readingMinutes={tutorial.readingMinutes}
+              showRole
+              size="md"
+            />
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted">
             <span className="rounded-sm bg-accent-soft px-2 py-0.5 font-medium text-accent-deep">
               {tutorial.level}
             </span>
@@ -63,14 +75,6 @@ export default async function TutorialDetailPage({ params }: Props) {
               <span key={tag}>#{tag}</span>
             ))}
           </div>
-          {tutorial.author ? (
-            <div className="mt-4">
-              <AuthorBadge author={tutorial.author} showRole size="md" />
-            </div>
-          ) : null}
-          <h1 className="mt-4 font-display text-3xl tracking-tight text-foreground sm:text-4xl">
-            {tutorial.title}
-          </h1>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">
             {tutorial.description}
           </p>

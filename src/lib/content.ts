@@ -10,6 +10,7 @@ import type {
 } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { profilePath, profilePublicUrl } from "@/lib/profile";
+import { readingMinutesFromStored } from "@/lib/reading-time";
 
 export type PersonLink = { label: string; href: string };
 
@@ -98,6 +99,7 @@ export type BlogPostView = {
   tags: string[];
   content: string;
   featured: boolean;
+  readingMinutes: number;
   author?: AuthorRef | null;
 };
 
@@ -113,11 +115,13 @@ export type TutorialView = {
   slug: string;
   title: string;
   description: string;
+  date: string;
   level: string;
   tags: string[];
   chapterCount: number;
   chapters: TutorialChapterView[];
   featured: boolean;
+  readingMinutes: number;
   author?: AuthorRef | null;
 };
 
@@ -128,6 +132,7 @@ export type CarouselItemView = {
   excerpt: string;
   date: string;
   href: string;
+  readingMinutes: number;
   author?: AuthorRef | null;
 };
 
@@ -247,6 +252,7 @@ function toBlogView(post: Post & { author?: Person | null }): BlogPostView {
     tags: post.tags,
     content: post.content,
     featured: post.featured,
+    readingMinutes: readingMinutesFromStored(post.content),
     author: toAuthorRef(post.author),
   };
 }
@@ -259,6 +265,7 @@ function toTutorialView(
     slug: post.slug,
     title: post.title,
     description: post.excerpt,
+    date: (post.publishedAt ?? post.createdAt).toISOString(),
     level: post.level ?? "Beginner",
     tags: post.tags,
     chapterCount: post.chapters.length,
@@ -269,6 +276,10 @@ function toTutorialView(
       content: chapter.content,
     })),
     featured: post.featured,
+    readingMinutes: readingMinutesFromStored(
+      post.content,
+      ...post.chapters.map((chapter) => chapter.content),
+    ),
     author: toAuthorRef(post.author),
   };
 }
@@ -336,9 +347,14 @@ export async function getPublishedTutorial(slug: string) {
 
 /** Mixed recent/featured posts for homepage carousel (plan A). */
 export async function listCarouselItems(limit = 6): Promise<CarouselItemView[]> {
+  const include = {
+    author: true,
+    chapters: { select: { content: true } },
+  } as const;
+
   const featured = await prisma.post.findMany({
     where: { published: true, featured: true },
-    include: { author: true },
+    include,
     orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
     take: limit,
   });
@@ -348,7 +364,7 @@ export async function listCarouselItems(limit = 6): Promise<CarouselItemView[]> 
       ? featured
       : await prisma.post.findMany({
           where: { published: true },
-          include: { author: true },
+          include,
           orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
           take: limit,
         });
@@ -360,6 +376,10 @@ export async function listCarouselItems(limit = 6): Promise<CarouselItemView[]> 
     excerpt: post.excerpt,
     date: (post.publishedAt ?? post.createdAt).toISOString(),
     href: post.type === "BLOG" ? `/blog/${post.slug}` : `/tutorial/${post.slug}`,
+    readingMinutes: readingMinutesFromStored(
+      post.content,
+      ...post.chapters.map((chapter) => chapter.content),
+    ),
     author: toAuthorRef(post.author),
   }));
 }

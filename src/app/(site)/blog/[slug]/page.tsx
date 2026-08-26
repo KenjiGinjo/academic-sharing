@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleBreadcrumb } from "@/components/ArticleBreadcrumb";
+import { ArticleByline, formatDate } from "@/components/ArticleByline";
 import { ArticlePager } from "@/components/ArticlePager";
-import { AuthorBadge } from "@/components/AuthorBadge";
 import { ContentBody } from "@/components/ContentBody";
-import { formatDate } from "@/components/BlogList";
 import { getPublishedBlog, listPublishedBlogs } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
@@ -47,13 +46,18 @@ export default async function BlogDetailPage({ params }: Props) {
 
       <article className="mx-auto w-full max-w-3xl px-5 py-10 sm:px-8 sm:py-14">
         <header className="border-b border-border pb-8">
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted">
-            <time dateTime={post.date}>{formatDate(post.date)}</time>
-            <AuthorBadge author={post.author} showRole />
-          </div>
-          <h1 className="mt-4 font-display text-3xl tracking-tight text-foreground sm:text-4xl">
+          <h1 className="font-display text-3xl tracking-tight text-foreground sm:text-4xl">
             {post.title}
           </h1>
+          <div className="mt-5">
+            <ArticleByline
+              date={post.date}
+              author={post.author}
+              readingMinutes={post.readingMinutes}
+              showRole
+              size="md"
+            />
+          </div>
           <p className="mt-4 text-base leading-relaxed text-muted">{post.excerpt}</p>
           {post.tags.length ? (
             <div className="mt-5 flex flex-wrap gap-2">

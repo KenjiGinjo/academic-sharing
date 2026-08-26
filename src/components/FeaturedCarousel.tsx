@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { AuthorBadge } from "@/components/AuthorBadge";
-import { formatDate } from "@/components/BlogList";
+import { ArticleByline } from "@/components/ArticleByline";
 import type { CarouselItemView } from "@/lib/content";
 
 export function FeaturedCarousel({ items }: { items: CarouselItemView[] }) {
@@ -135,12 +134,6 @@ export function FeaturedCarousel({ items }: { items: CarouselItemView[] }) {
               <span className="inline-flex items-center rounded-md bg-accent-soft px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-deep">
                 {item.kind === "blog" ? "Blog" : "Tutorial"}
               </span>
-              <time
-                dateTime={item.date}
-                className="text-sm text-muted"
-              >
-                {formatDate(item.date)}
-              </time>
             </div>
 
             <h3 className="mt-4 max-w-3xl font-display text-3xl leading-[1.15] tracking-tight text-foreground sm:text-4xl md:text-[2.75rem]">
@@ -152,12 +145,21 @@ export function FeaturedCarousel({ items }: { items: CarouselItemView[] }) {
               </Link>
             </h3>
 
+            <div className="relative z-10 mt-5">
+              <ArticleByline
+                date={item.date}
+                author={item.author}
+                readingMinutes={item.readingMinutes}
+                showRole
+                size="md"
+              />
+            </div>
+
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
               {item.excerpt}
             </p>
 
             <div className="relative z-10 mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
-              <AuthorBadge author={item.author} size="md" showRole />
               <Link
                 href={item.href}
                 className="inline-flex h-10 items-center rounded-md bg-accent px-4 text-sm font-medium text-white transition hover:bg-accent-deep"
