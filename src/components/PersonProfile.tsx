@@ -246,14 +246,14 @@ export function PersonProfile({ profile }: { profile: ProfileView }) {
             <ul className="mt-6 space-y-8">
               {profile.applications.map((item) => (
                 <li key={item.name} className="border-b border-border pb-8 last:border-0 last:pb-0">
-                  <div className="flex flex-col gap-5 sm:flex-row sm:gap-6">
+                  <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-8">
                     {item.imageUrl ? (
-                      <div className="aspect-[16/10] w-full shrink-0 overflow-hidden rounded-md bg-accent-soft sm:w-52">
+                      <div className="w-full shrink-0 overflow-hidden rounded-md bg-accent-soft sm:w-[28rem]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={item.imageUrl}
                           alt=""
-                          className="h-full w-full object-cover"
+                          className="h-auto max-h-72 w-full object-contain"
                         />
                       </div>
                     ) : null}

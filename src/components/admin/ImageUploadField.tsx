@@ -66,7 +66,15 @@ export function ImageUploadField({
         >
           {value ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={value} alt="" className="h-full w-full object-cover" />
+            <img
+              src={value}
+              alt=""
+              className={
+                preview === "avatar"
+                  ? "h-full w-full object-cover"
+                  : "h-full w-full object-contain"
+              }
+            />
           ) : (
             <span aria-hidden>No image</span>
           )}
