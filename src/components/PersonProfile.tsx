@@ -21,16 +21,16 @@ export function PersonProfile({ profile }: { profile: ProfileView }) {
       show: profile.publications.length > 0,
     },
     {
-      id: "competitions",
-      label: "Competitions",
-      show: profile.competitions.length > 0,
-    },
-    {
       id: "applications",
       label: "Applications",
       show: profile.applications.length > 0,
     },
     { id: "patents", label: "Patents", show: profile.patents.length > 0 },
+    {
+      id: "competitions",
+      label: "Competitions",
+      show: profile.competitions.length > 0,
+    },
   ].filter((item) => item.show);
 
   const pubsByType = PUB_ORDER.map((type) => ({
@@ -105,7 +105,7 @@ export function PersonProfile({ profile }: { profile: ProfileView }) {
   return (
     <div id="top" className="min-h-full bg-background">
       <header className="sticky top-0 z-10 border-b border-border/80 bg-surface/90 backdrop-blur-md">
-        <div className="mx-auto flex w-full max-w-3xl flex-wrap items-center justify-between gap-3 px-5 py-3 sm:px-8">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-3 sm:px-8">
           <a
             href="#top"
             className="text-sm font-medium tracking-tight text-foreground transition hover:text-accent-deep"
@@ -131,7 +131,7 @@ export function PersonProfile({ profile }: { profile: ProfileView }) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-3xl px-5 py-12 sm:px-8 sm:py-16">
+      <main className="mx-auto w-full max-w-6xl px-5 py-12 sm:px-8 sm:py-16">
         <section className="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:gap-8">
           <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent-soft text-2xl font-semibold text-accent-deep ring-1 ring-border sm:h-36 sm:w-36">
             {profile.avatarUrl ? (
@@ -240,41 +240,6 @@ export function PersonProfile({ profile }: { profile: ProfileView }) {
           </section>
         ) : null}
 
-        {profile.competitions.length ? (
-          <section id="competitions" className="mt-14 scroll-mt-24">
-            <SectionTitle>Competitions</SectionTitle>
-            <ul className="mt-6 divide-y divide-border border-y border-border">
-              {profile.competitions.map((item) => (
-                <li key={`${item.name}-${item.year}`} className="py-5">
-                  <p className="text-base font-medium text-foreground">
-                    {item.url ? (
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-start gap-1.5 hover:text-accent-deep"
-                      >
-                        <span>{item.name}</span>
-                        <IconExternal className="mt-1 shrink-0 opacity-50" />
-                      </a>
-                    ) : (
-                      item.name
-                    )}
-                  </p>
-                  <p className="mt-1 text-sm text-accent-deep">
-                    {[item.award, item.year].filter(Boolean).join(" · ")}
-                  </p>
-                  {item.description ? (
-                    <p className="mt-2 text-sm leading-relaxed text-muted">
-                      {item.description}
-                    </p>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
         {profile.applications.length ? (
           <section id="applications" className="mt-14 scroll-mt-24">
             <SectionTitle>Applications</SectionTitle>
@@ -356,6 +321,41 @@ export function PersonProfile({ profile }: { profile: ProfileView }) {
                     {[item.status, item.number, item.year]
                       .filter(Boolean)
                       .join(" · ")}
+                  </p>
+                  {item.description ? (
+                    <p className="mt-2 text-sm leading-relaxed text-muted">
+                      {item.description}
+                    </p>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {profile.competitions.length ? (
+          <section id="competitions" className="mt-14 scroll-mt-24">
+            <SectionTitle>Competitions</SectionTitle>
+            <ul className="mt-6 divide-y divide-border border-y border-border">
+              {profile.competitions.map((item) => (
+                <li key={`${item.name}-${item.year}`} className="py-5">
+                  <p className="text-base font-medium text-foreground">
+                    {item.url ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-start gap-1.5 hover:text-accent-deep"
+                      >
+                        <span>{item.name}</span>
+                        <IconExternal className="mt-1 shrink-0 opacity-50" />
+                      </a>
+                    ) : (
+                      item.name
+                    )}
+                  </p>
+                  <p className="mt-1 text-sm text-accent-deep">
+                    {[item.award, item.year].filter(Boolean).join(" · ")}
                   </p>
                   {item.description ? (
                     <p className="mt-2 text-sm leading-relaxed text-muted">
