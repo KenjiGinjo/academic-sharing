@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ArticleByline } from "@/components/ArticleByline";
 import { ContentBody } from "@/components/ContentBody";
 import { ReadingTime } from "@/components/ReadingTime";
@@ -21,6 +21,7 @@ export default async function TutorialDetailPage({ params }: Props) {
   const { slug } = await params;
   const tutorial = await getPublishedTutorial(slug);
   if (!tutorial) notFound();
+  if (tutorial.href !== `/tutorial/${slug}`) redirect(tutorial.href);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-10 sm:px-8 sm:py-14">

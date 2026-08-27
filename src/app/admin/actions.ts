@@ -6,10 +6,12 @@ import type { PublicationType } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { signOut } from "@/lib/auth";
 import {
+  assertPostSlugAvailable,
   ensureUniquePersonSlug,
   initialsFromName,
+  parseCustomPostSlug,
   parseTags,
-  slugify,
+  postHref,
 } from "@/lib/content";
 import {
   assertCanEditPerson,
@@ -394,8 +396,8 @@ export async function saveBlogAction(formData: FormData) {
   }
 
   const title = String(formData.get("title") ?? "").trim();
-  const slugInput = String(formData.get("slug") ?? "").trim();
-  const slug = slugify(slugInput || title);
+  const slug = parseCustomPostSlug(String(formData.get("slug") ?? ""));
+  await assertPostSlugAvailable(slug, id || undefined);
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const content = String(formData.get("content") ?? "");
   const tags = parseTags(String(formData.get("tags") ?? ""));
@@ -415,8 +417,8 @@ export async function saveBlogAction(formData: FormData) {
     authorId = session.user.personId;
   }
 
-  if (!title || !slug || !excerpt) {
-    throw new Error("Title, slug, and excerpt are required.");
+  if (!title || !excerpt) {
+    throw new Error("Title and excerpt are required.");
   }
 
   const data = {
@@ -432,15 +434,14 @@ export async function saveBlogAction(formData: FormData) {
     publishedAt: published ? publishedAt : null,
   };
 
-  if (id) {
-    await prisma.post.update({ where: { id }, data });
-  } else {
-    await prisma.post.create({ data });
-  }
+  const saved = id
+    ? await prisma.post.update({ where: { id }, data })
+    : await prisma.post.create({ data });
 
   revalidatePath("/");
   revalidatePath("/blog");
-  revalidatePath(`/blog/${slug}`);
+  revalidatePath(postHref("blog", saved));
+  revalidatePath(`/blog/${saved.publicId}`);
   revalidatePath("/admin/blogs");
   redirect("/admin/blogs");
 }
@@ -468,8 +469,8 @@ export async function saveTutorialAction(formData: FormData) {
   }
 
   const title = String(formData.get("title") ?? "").trim();
-  const slugInput = String(formData.get("slug") ?? "").trim();
-  const slug = slugify(slugInput || title);
+  const slug = parseCustomPostSlug(String(formData.get("slug") ?? ""));
+  await assertPostSlugAvailable(slug, id || undefined);
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const level = String(formData.get("level") ?? "Beginner") as
     | "Beginner"
@@ -492,68 +493,102 @@ export async function saveTutorialAction(formData: FormData) {
     authorId = session.user.personId;
   }
 
+  const chapterIds = formData.getAll("chapterId").map(String);
   const chapterTitles = formData.getAll("chapterTitle").map(String);
   const chapterSlugs = formData.getAll("chapterSlug").map(String);
   const chapterContents = formData.getAll("chapterContent").map(String);
 
   const chapters = chapterTitles
-    .map((chapterTitle, index) => {
-      const chapterSlug =
-        slugify(chapterSlugs[index] || chapterTitle) || `chapter-${index + 1}`;
-      return {
-        title: chapterTitle.trim(),
-        slug: chapterSlug,
-        content: chapterContents[index] ?? "",
-        sortOrder: index,
-      };
-    })
+    .map((chapterTitle, index) => ({
+      id: chapterIds[index]?.trim() || null,
+      title: chapterTitle.trim(),
+      slug: parseCustomPostSlug(chapterSlugs[index] ?? ""),
+      content: chapterContents[index] ?? "",
+      sortOrder: index,
+    }))
     .filter((chapter) => chapter.title);
 
-  if (!title || !slug || !excerpt) {
-    throw new Error("Title, slug, and description are required.");
+  const customChapterSlugs = chapters
+    .map((chapter) => chapter.slug)
+    .filter((value): value is string => Boolean(value));
+  if (new Set(customChapterSlugs).size !== customChapterSlugs.length) {
+    throw new Error("Chapter slugs must be unique.");
   }
 
-  if (id) {
-    await prisma.$transaction(async (tx) => {
-      await tx.tutorialChapter.deleteMany({ where: { postId: id } });
-      await tx.post.update({
-        where: { id },
+  if (!title || !excerpt) {
+    throw new Error("Title and description are required.");
+  }
+
+  const data = {
+    type: "TUTORIAL" as const,
+    title,
+    slug,
+    excerpt,
+    level,
+    tags,
+    authorId,
+    published,
+    featured,
+    publishedAt: published ? publishedAt : null,
+  };
+
+  const saved = id
+    ? await prisma.$transaction(async (tx) => {
+        const owned = await tx.tutorialChapter.findMany({
+          where: { postId: id },
+          select: { id: true },
+        });
+        const ownedIds = new Set(owned.map((item) => item.id));
+        const keepIds = chapters
+          .map((chapter) => chapter.id)
+          .filter((chapterId): chapterId is string =>
+            Boolean(chapterId && ownedIds.has(chapterId)),
+          );
+
+        await tx.tutorialChapter.deleteMany({
+          where: { postId: id, id: { notIn: keepIds } },
+        });
+        await tx.post.update({ where: { id }, data });
+
+        for (const chapter of chapters) {
+          const payload = {
+            title: chapter.title,
+            slug: chapter.slug,
+            content: chapter.content,
+            sortOrder: chapter.sortOrder,
+          };
+          if (chapter.id && ownedIds.has(chapter.id)) {
+            await tx.tutorialChapter.update({
+              where: { id: chapter.id },
+              data: payload,
+            });
+          } else {
+            await tx.tutorialChapter.create({
+              data: { postId: id, ...payload },
+            });
+          }
+        }
+
+        return tx.post.findUniqueOrThrow({ where: { id } });
+      })
+    : await prisma.post.create({
         data: {
-          type: "TUTORIAL",
-          title,
-          slug,
-          excerpt,
-          level,
-          tags,
-          authorId,
-          published,
-          featured,
-          publishedAt: published ? publishedAt : null,
-          chapters: { create: chapters },
+          ...data,
+          chapters: {
+            create: chapters.map((chapter) => ({
+              title: chapter.title,
+              slug: chapter.slug,
+              content: chapter.content,
+              sortOrder: chapter.sortOrder,
+            })),
+          },
         },
       });
-    });
-  } else {
-    await prisma.post.create({
-      data: {
-        type: "TUTORIAL",
-        slug,
-        title,
-        excerpt,
-        level,
-        tags,
-        authorId,
-        published,
-        featured,
-        publishedAt: published ? publishedAt : null,
-        chapters: { create: chapters },
-      },
-    });
-  }
 
   revalidatePath("/");
   revalidatePath("/tutorial");
-  revalidatePath(`/tutorial/${slug}`);
+  revalidatePath(postHref("tutorial", saved));
+  revalidatePath(`/tutorial/${saved.publicId}`);
   revalidatePath("/admin/tutorials");
   redirect("/admin/tutorials");
 }

@@ -146,8 +146,9 @@ model PersonPatent {
 
 model Post {
   id          String            @id @default(cuid())
+  publicId    Int               @unique @default(autoincrement())
   type        PostType
-  slug        String            @unique
+  slug        String?           @unique
   title       String
   excerpt     String
   content     String            @default("") @db.Text
@@ -169,9 +170,10 @@ model Post {
 
 model TutorialChapter {
   id        String   @id @default(cuid())
+  publicId  Int      @unique @default(autoincrement())
   postId    String
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  slug      String
+  slug      String?
   title     String
   content   String   @db.Text
   sortOrder Int      @default(0)

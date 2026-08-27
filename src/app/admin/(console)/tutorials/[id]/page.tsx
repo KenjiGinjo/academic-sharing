@@ -32,6 +32,7 @@ export default async function EditTutorialPage({ params }: Props) {
           canAssignAuthor={isAdmin(session)}
           post={{
             id: tutorial.id,
+            publicId: tutorial.publicId,
             title: tutorial.title,
             slug: tutorial.slug,
             excerpt: tutorial.excerpt,
@@ -42,6 +43,8 @@ export default async function EditTutorialPage({ params }: Props) {
             featured: tutorial.featured,
             publishedAt: tutorial.publishedAt,
             chapters: tutorial.chapters.map((chapter) => ({
+              id: chapter.id,
+              publicId: chapter.publicId,
               title: chapter.title,
               slug: chapter.slug,
               content: chapter.content,

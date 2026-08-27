@@ -45,7 +45,9 @@ export default async function AdminBlogsPage() {
               <tr key={blog.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3">
                   <div className="font-medium">{blog.title}</div>
-                  <div className="text-xs text-muted">/{blog.slug}</div>
+                  <div className="text-xs text-muted">
+                    /{blog.slug || blog.publicId}
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-muted">
                   {blog.author?.name ?? "—"}

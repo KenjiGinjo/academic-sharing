@@ -6,8 +6,9 @@ import type { Person } from "@prisma/client";
 
 type BlogFormPost = {
   id: string;
+  publicId: number;
   title: string;
-  slug: string;
+  slug: string | null;
   excerpt: string;
   content: string;
   tags: string[];
@@ -38,11 +39,18 @@ export function BlogForm({
       {post ? <input type="hidden" name="id" value={post.id} /> : null}
       <Field label="Title" name="title" defaultValue={post?.title} required />
       <Field
-        label="Slug"
+        label="Slug (optional)"
         name="slug"
-        defaultValue={post?.slug}
-        placeholder="auto from title if empty"
+        defaultValue={post?.slug ?? ""}
+        placeholder="leave empty to use numeric id"
       />
+      <p className="text-xs text-muted">
+        {post
+          ? `Numeric id ${post.publicId} is always available at /blog/${post.publicId}${
+              post.slug ? `. Custom URL: /blog/${post.slug}` : ""
+            }.`
+          : "Leave empty to use a numeric id after save. Custom slugs cannot be only digits."}
+      </p>
       <label className="block text-sm">
         <span className="mb-1 block text-muted">Excerpt</span>
         <textarea

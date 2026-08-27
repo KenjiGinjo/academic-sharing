@@ -29,6 +29,7 @@ export default async function EditBlogPage({ params }: Props) {
           canAssignAuthor={isAdmin(session)}
           post={{
             id: blog.id,
+            publicId: blog.publicId,
             title: blog.title,
             slug: blog.slug,
             excerpt: blog.excerpt,

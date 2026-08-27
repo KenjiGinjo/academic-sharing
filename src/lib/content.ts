@@ -92,7 +92,9 @@ export type ProfileView = {
 
 export type BlogPostView = {
   id: string;
-  slug: string;
+  publicId: number;
+  slug: string | null;
+  href: string;
   title: string;
   excerpt: string;
   date: string;
@@ -105,14 +107,17 @@ export type BlogPostView = {
 
 export type TutorialChapterView = {
   id: string;
-  slug: string;
+  publicId: number;
+  slug: string | null;
   title: string;
   content: string;
 };
 
 export type TutorialView = {
   id: string;
-  slug: string;
+  publicId: number;
+  slug: string | null;
+  href: string;
   title: string;
   description: string;
   date: string;
@@ -135,6 +140,42 @@ export type CarouselItemView = {
   readingMinutes: number;
   author?: AuthorRef | null;
 };
+
+export function postUrlKey(post: { slug: string | null; publicId: number }) {
+  return post.slug || String(post.publicId);
+}
+
+export function postHref(
+  kind: "blog" | "tutorial",
+  post: { slug: string | null; publicId: number },
+) {
+  return `/${kind}/${postUrlKey(post)}`;
+}
+
+/** Empty input → numeric id URL. Pure digits are reserved for publicId. */
+export function parseCustomPostSlug(raw: string) {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  const slug = slugify(trimmed);
+  if (!slug) {
+    throw new Error(
+      "Slug must use letters or hyphens. Leave empty to use a numeric id.",
+    );
+  }
+  if (/^\d+$/.test(slug)) {
+    throw new Error(
+      "Numeric slugs are reserved for ids. Choose a different slug or leave empty.",
+    );
+  }
+  return slug;
+}
+
+function publicIdFromParam(param: string) {
+  if (!/^\d+$/.test(param)) return null;
+  const n = Number(param);
+  if (!Number.isSafeInteger(n) || n <= 0) return null;
+  return n;
+}
 
 function toAuthorRef(person: Person | null | undefined): AuthorRef | null {
   if (!person) return null;
@@ -245,7 +286,9 @@ export function toProfileView(person: ProfilePerson): ProfileView {
 function toBlogView(post: Post & { author?: Person | null }): BlogPostView {
   return {
     id: post.id,
+    publicId: post.publicId,
     slug: post.slug,
+    href: postHref("blog", post),
     title: post.title,
     excerpt: post.excerpt,
     date: (post.publishedAt ?? post.createdAt).toISOString(),
@@ -262,19 +305,25 @@ function toTutorialView(
 ): TutorialView {
   return {
     id: post.id,
+    publicId: post.publicId,
     slug: post.slug,
+    href: postHref("tutorial", post),
     title: post.title,
     description: post.excerpt,
     date: (post.publishedAt ?? post.createdAt).toISOString(),
     level: post.level ?? "Beginner",
     tags: post.tags,
     chapterCount: post.chapters.length,
-    chapters: post.chapters.map((chapter) => ({
-      id: chapter.slug,
-      slug: chapter.slug,
-      title: chapter.title,
-      content: chapter.content,
-    })),
+    chapters: post.chapters.map((chapter) => {
+      const key = postUrlKey(chapter);
+      return {
+        id: key,
+        publicId: chapter.publicId,
+        slug: chapter.slug,
+        title: chapter.title,
+        content: chapter.content,
+      };
+    }),
     featured: post.featured,
     readingMinutes: readingMinutesFromStored(
       post.content,
@@ -314,12 +363,43 @@ export async function listPublishedBlogs() {
   return posts.map(toBlogView);
 }
 
-export async function getPublishedBlog(slug: string) {
-  const post = await prisma.post.findFirst({
-    where: { type: "BLOG", slug, published: true },
-    include: { author: true },
+async function findPublishedPost(
+  type: "BLOG" | "TUTORIAL",
+  param: string,
+  include: object,
+) {
+  const bySlug = await prisma.post.findFirst({
+    where: { type, published: true, slug: param },
+    include: include as never,
   });
-  return post ? toBlogView(post) : null;
+  if (bySlug) return bySlug;
+
+  const publicId = publicIdFromParam(param);
+  if (publicId == null) return null;
+  return prisma.post.findFirst({
+    where: { type, published: true, publicId },
+    include: include as never,
+  });
+}
+
+export async function assertPostSlugAvailable(
+  slug: string | null,
+  excludeId?: string,
+) {
+  if (!slug) return;
+  const existing = await prisma.post.findFirst({
+    where: {
+      slug,
+      ...(excludeId ? { NOT: { id: excludeId } } : {}),
+    },
+    select: { id: true },
+  });
+  if (existing) throw new Error("That slug is already in use.");
+}
+
+export async function getPublishedBlog(param: string) {
+  const post = await findPublishedPost("BLOG", param, { author: true });
+  return post ? toBlogView(post as Parameters<typeof toBlogView>[0]) : null;
 }
 
 export async function listPublishedTutorials() {
@@ -334,15 +414,14 @@ export async function listPublishedTutorials() {
   return posts.map(toTutorialView);
 }
 
-export async function getPublishedTutorial(slug: string) {
-  const post = await prisma.post.findFirst({
-    where: { type: "TUTORIAL", slug, published: true },
-    include: {
-      author: true,
-      chapters: { orderBy: { sortOrder: "asc" } },
-    },
+export async function getPublishedTutorial(param: string) {
+  const post = await findPublishedPost("TUTORIAL", param, {
+    author: true,
+    chapters: { orderBy: { sortOrder: "asc" } },
   });
-  return post ? toTutorialView(post) : null;
+  return post
+    ? toTutorialView(post as Parameters<typeof toTutorialView>[0])
+    : null;
 }
 
 /** Mixed recent/featured posts for homepage carousel (plan A). */
@@ -371,11 +450,11 @@ export async function listCarouselItems(limit = 6): Promise<CarouselItemView[]> 
 
   return source.map((post) => ({
     kind: post.type === "BLOG" ? "blog" : "tutorial",
-    slug: post.slug,
+    slug: postUrlKey(post),
     title: post.title,
     excerpt: post.excerpt,
     date: (post.publishedAt ?? post.createdAt).toISOString(),
-    href: post.type === "BLOG" ? `/blog/${post.slug}` : `/tutorial/${post.slug}`,
+    href: postHref(post.type === "BLOG" ? "blog" : "tutorial", post),
     readingMinutes: readingMinutesFromStored(
       post.content,
       ...post.chapters.map((chapter) => chapter.content),

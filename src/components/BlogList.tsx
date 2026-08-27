@@ -47,12 +47,12 @@ export function BlogList({
     <ul className="divide-y divide-border border-y border-border">
       {posts.map((post) => (
         <li
-          key={post.slug}
+          key={post.id}
           className="relative py-6 transition hover:bg-accent-soft/40"
         >
           <h3 className="text-lg font-medium tracking-tight text-foreground">
             <Link
-              href={`/blog/${post.slug}`}
+              href={post.href}
               className="after:absolute after:inset-0 hover:text-accent-deep"
             >
               {post.title}

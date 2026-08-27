@@ -50,7 +50,7 @@ export default async function AdminTutorialsPage() {
                 <td className="px-4 py-3">
                   <div className="font-medium">{item.title}</div>
                   <div className="text-xs text-muted">
-                    {item.level} · /{item.slug}
+                    {item.level} · /{item.slug || item.publicId}
                   </div>
                 </td>
                 <td className="px-4 py-3 text-muted">

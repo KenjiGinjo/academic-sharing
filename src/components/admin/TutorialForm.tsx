@@ -7,6 +7,8 @@ import type { Person } from "@prisma/client";
 
 type ChapterDraft = {
   key: string;
+  id?: string;
+  publicId?: number;
   title: string;
   slug: string;
   content: string;
@@ -14,8 +16,9 @@ type ChapterDraft = {
 
 type TutorialFormPost = {
   id: string;
+  publicId: number;
   title: string;
-  slug: string;
+  slug: string | null;
   excerpt: string;
   level: string;
   tags: string[];
@@ -23,7 +26,7 @@ type TutorialFormPost = {
   published: boolean;
   featured: boolean;
   publishedAt: Date | null;
-  chapters: { title: string; slug: string; content: string }[];
+  chapters: { id: string; publicId: number; title: string; slug: string | null; content: string }[];
 };
 
 function newChapter(partial?: Partial<ChapterDraft>): ChapterDraft {
@@ -49,8 +52,10 @@ export function TutorialForm({
     post?.chapters?.length
       ? post.chapters.map((chapter) =>
           newChapter({
+            id: chapter.id,
+            publicId: chapter.publicId,
             title: chapter.title,
-            slug: chapter.slug,
+            slug: chapter.slug ?? "",
             content: chapter.content,
           }),
         )
@@ -69,11 +74,18 @@ export function TutorialForm({
       {post ? <input type="hidden" name="id" value={post.id} /> : null}
       <Field label="Title" name="title" defaultValue={post?.title} required />
       <Field
-        label="Slug"
+        label="Slug (optional)"
         name="slug"
-        defaultValue={post?.slug}
-        placeholder="auto from title if empty"
+        defaultValue={post?.slug ?? ""}
+        placeholder="leave empty to use numeric id"
       />
+      <p className="text-xs text-muted">
+        {post
+          ? `Numeric id ${post.publicId} is always available at /tutorial/${post.publicId}${
+              post.slug ? `. Custom URL: /tutorial/${post.slug}` : ""
+            }.`
+          : "Leave empty to use a numeric id after save. Custom slugs cannot be only digits."}
+      </p>
       <label className="block text-sm">
         <span className="mb-1 block text-muted">Description</span>
         <textarea
@@ -202,7 +214,8 @@ export function TutorialForm({
                   />
                 </label>
                 <label className="block text-sm">
-                  <span className="mb-1 block text-muted">Slug</span>
+                  <span className="mb-1 block text-muted">Slug (optional)</span>
+                  <input type="hidden" name="chapterId" value={chapter.id ?? ""} />
                   <input
                     name="chapterSlug"
                     value={chapter.slug}
@@ -215,9 +228,14 @@ export function TutorialForm({
                         ),
                       )
                     }
-                    placeholder="auto from title"
+                    placeholder="leave empty to use numeric id"
                     className="w-full rounded border border-border bg-surface px-3 py-2"
                   />
+                  {chapter.publicId ? (
+                    <span className="mt-1 block text-xs text-muted">
+                      Numeric id: #{chapter.publicId}
+                    </span>
+                  ) : null}
                 </label>
               </div>
               <div className="mt-3">

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ArticleBreadcrumb } from "@/components/ArticleBreadcrumb";
 import { ArticleByline, formatDate } from "@/components/ArticleByline";
 import { ArticlePager } from "@/components/ArticlePager";
@@ -25,9 +25,10 @@ export default async function BlogDetailPage({ params }: Props) {
     listPublishedBlogs(),
   ]);
   if (!post) notFound();
+  if (post.href !== `/blog/${slug}`) redirect(post.href);
 
   // blogs are newest-first: index-1 = newer, index+1 = older
-  const index = blogs.findIndex((item) => item.slug === slug);
+  const index = blogs.findIndex((item) => item.id === post.id);
   const newer = index > 0 ? blogs[index - 1] : null;
   const older = index >= 0 && index < blogs.length - 1 ? blogs[index + 1] : null;
 
@@ -85,7 +86,7 @@ export default async function BlogDetailPage({ params }: Props) {
           newer={
             newer
               ? {
-                  href: `/blog/${newer.slug}`,
+                  href: newer.href,
                   title: newer.title,
                   meta: formatDate(newer.date),
                 }
@@ -94,7 +95,7 @@ export default async function BlogDetailPage({ params }: Props) {
           older={
             older
               ? {
-                  href: `/blog/${older.slug}`,
+                  href: older.href,
                   title: older.title,
                   meta: formatDate(older.date),
                 }

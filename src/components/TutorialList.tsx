@@ -8,12 +8,12 @@ export function TutorialList({ items }: { items: TutorialView[] }) {
     <ul className="space-y-4">
       {items.map((item) => (
         <li
-          key={item.slug}
+          key={item.id}
           className="relative border border-border bg-surface px-5 py-6 transition hover:border-accent/35 hover:bg-accent-soft/30 sm:px-7"
         >
           <h3 className="text-xl font-medium tracking-tight text-foreground">
             <Link
-              href={`/tutorial/${item.slug}`}
+              href={item.href}
               className="after:absolute after:inset-0 hover:text-accent-deep"
             >
               {item.title}
