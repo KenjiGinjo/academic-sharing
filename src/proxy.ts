@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { parsePersonSubdomain } from "@/lib/profile";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const host = request.headers.get("host") ?? "";
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN?.trim() || "cgneurai.com";
+  const rootDomain =
+    process.env.NEXT_PUBLIC_ROOT_DOMAIN?.trim() || "cgneurai.com";
   const slug = parsePersonSubdomain(host, rootDomain);
   if (!slug) return NextResponse.next();
 
