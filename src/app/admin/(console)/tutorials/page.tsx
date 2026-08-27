@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { deleteTutorialAction } from "@/app/admin/actions";
+import { ConfirmDeleteButton } from "@/components/admin/ConfirmDeleteButton";
 import { authorScope, requireUser } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
@@ -74,12 +75,11 @@ export default async function AdminTutorialsPage() {
                     >
                       Edit
                     </Link>
-                    <form action={deleteTutorialAction}>
-                      <input type="hidden" name="id" value={item.id} />
-                      <button type="submit" className="text-red-700 hover:underline">
-                        Delete
-                      </button>
-                    </form>
+                    <ConfirmDeleteButton
+                      action={deleteTutorialAction}
+                      id={item.id}
+                      message={`Delete tutorial “${item.title}”? This cannot be undone.`}
+                    />
                   </div>
                 </td>
               </tr>

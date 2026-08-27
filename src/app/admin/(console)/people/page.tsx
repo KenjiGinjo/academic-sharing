@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { deleteAuthorAction } from "@/app/admin/actions";
+import { ConfirmDeleteButton } from "@/components/admin/ConfirmDeleteButton";
 import { requireAdmin } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
@@ -73,15 +74,11 @@ export default async function AdminAuthorsPage() {
                     >
                       Edit
                     </Link>
-                    <form action={deleteAuthorAction}>
-                      <input type="hidden" name="id" value={author.id} />
-                      <button
-                        type="submit"
-                        className="text-red-700 hover:underline"
-                      >
-                        Delete
-                      </button>
-                    </form>
+                    <ConfirmDeleteButton
+                      action={deleteAuthorAction}
+                      id={author.id}
+                      message={`Delete person “${author.name}”? This cannot be undone.`}
+                    />
                   </div>
                 </td>
               </tr>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { deleteBlogAction } from "@/app/admin/actions";
+import { ConfirmDeleteButton } from "@/components/admin/ConfirmDeleteButton";
 import { authorScope, requireUser } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
@@ -69,12 +70,11 @@ export default async function AdminBlogsPage() {
                     >
                       Edit
                     </Link>
-                    <form action={deleteBlogAction}>
-                      <input type="hidden" name="id" value={blog.id} />
-                      <button type="submit" className="text-red-700 hover:underline">
-                        Delete
-                      </button>
-                    </form>
+                    <ConfirmDeleteButton
+                      action={deleteBlogAction}
+                      id={blog.id}
+                      message={`Delete blog “${blog.title}”? This cannot be undone.`}
+                    />
                   </div>
                 </td>
               </tr>
