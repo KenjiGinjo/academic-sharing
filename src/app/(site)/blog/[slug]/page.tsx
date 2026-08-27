@@ -45,36 +45,38 @@ export default async function BlogDetailPage({ params }: Props) {
         </div>
       </div>
 
-      <article className="mx-auto w-full max-w-3xl px-5 py-10 sm:px-8 sm:py-14">
-        <header className="border-b border-border pb-8">
-          <h1 className="font-display text-3xl tracking-tight text-foreground sm:text-4xl">
-            {post.title}
-          </h1>
-          <div className="mt-4">
-            <ReadingTime minutes={post.readingMinutes} />
-          </div>
-          <div className="mt-5">
-            <ArticleByline
-              date={post.date}
-              author={post.author}
-              showRole
-              size="md"
-            />
-          </div>
-          <p className="mt-4 text-base leading-relaxed text-muted">{post.excerpt}</p>
-          {post.tags.length ? (
-            <div className="mt-5 flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
-                <span key={tag} className="text-xs tracking-wide text-accent-deep">
-                  #{tag}
-                </span>
-              ))}
+      <article className="mx-auto w-full max-w-6xl px-5 py-10 sm:px-8 sm:py-14">
+        <div className="max-w-3xl">
+          <header className="border-b border-border pb-8">
+            <h1 className="font-display text-3xl tracking-tight text-foreground sm:text-4xl">
+              {post.title}
+            </h1>
+            <div className="mt-4">
+              <ReadingTime minutes={post.readingMinutes} />
             </div>
-          ) : null}
-        </header>
+            <div className="mt-5">
+              <ArticleByline
+                date={post.date}
+                author={post.author}
+                showRole
+                size="md"
+              />
+            </div>
+            <p className="mt-4 text-base leading-relaxed text-muted">{post.excerpt}</p>
+            {post.tags.length ? (
+              <div className="mt-5 flex flex-wrap gap-2">
+                {post.tags.map((tag) => (
+                  <span key={tag} className="text-xs tracking-wide text-accent-deep">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+          </header>
 
-        <div className="mt-10">
-          <ContentBody content={post.content} />
+          <div className="mt-10">
+            <ContentBody content={post.content} />
+          </div>
         </div>
 
         <ArticlePager
