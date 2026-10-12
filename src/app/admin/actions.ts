@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import type { PublicationType } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { signOut } from "@/lib/auth";
+import { ensureUniqueBenchmarkSlug } from "@/lib/benchmark";
 import {
   assertPostSlugAvailable,
   ensureUniquePersonSlug,
@@ -603,4 +604,89 @@ export async function deleteTutorialAction(formData: FormData) {
   revalidatePath("/tutorial");
   revalidatePath("/admin/tutorials");
   redirect("/admin/tutorials");
+}
+
+function revalidateBenchmark(slug?: string | null) {
+  revalidatePath("/benchmark");
+  revalidatePath("/admin");
+  revalidatePath("/admin/benchmarks");
+  if (slug) revalidatePath(`/benchmark/${slug}`);
+}
+
+function parseBenchmarkEntries(formData: FormData) {
+  const names = formData.getAll("entryName").map(String);
+  const scores = formData.getAll("entryScore").map(String);
+
+  return names
+    .flatMap((rawName, index) => {
+      const name = rawName.trim();
+      const rawScore = (scores[index] ?? "").trim();
+      if (!name) return [];
+      const score = Number(rawScore);
+      if (!Number.isFinite(score)) {
+        throw new Error(`Score for “${name}” must be a number.`);
+      }
+      return [{ name, score }];
+    })
+    .map((entry, index) => ({ ...entry, sortOrder: index }));
+}
+
+export async function saveBenchmarkAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const name = String(formData.get("name") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const info = String(formData.get("info") ?? "");
+  const published = formData.get("published") === "on";
+  const sortOrder = Number(formData.get("sortOrder") ?? 0);
+  const slugInput = String(formData.get("slug") ?? "").trim();
+
+  if (!name) throw new Error("Name is required.");
+
+  const entries = parseBenchmarkEntries(formData);
+  const slug = await ensureUniqueBenchmarkSlug(slugInput || name, id || undefined);
+  const data = {
+    name,
+    slug,
+    description,
+    info,
+    published,
+    sortOrder: Number.isFinite(sortOrder) ? Math.trunc(sortOrder) : 0,
+  };
+
+  const previous = id
+    ? await prisma.benchmark.findUnique({ where: { id }, select: { slug: true } })
+    : null;
+  if (id && !previous) throw new Error("Benchmark not found.");
+
+  const saved = await prisma.$transaction(async (tx) => {
+    const benchmark = id
+      ? await tx.benchmark.update({ where: { id }, data })
+      : await tx.benchmark.create({ data });
+    await tx.benchmarkEntry.deleteMany({ where: { benchmarkId: benchmark.id } });
+    if (entries.length) {
+      await tx.benchmarkEntry.createMany({
+        data: entries.map((entry) => ({ ...entry, benchmarkId: benchmark.id })),
+      });
+    }
+    return benchmark;
+  });
+
+  revalidateBenchmark(previous?.slug);
+  revalidateBenchmark(saved.slug);
+  redirect("/admin/benchmarks");
+}
+
+export async function deleteBenchmarkAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  const benchmark = await prisma.benchmark.findUnique({
+    where: { id },
+    select: { slug: true },
+  });
+  await prisma.benchmark.delete({ where: { id } });
+  revalidateBenchmark(benchmark?.slug);
+  redirect("/admin/benchmarks");
 }

@@ -183,3 +183,27 @@ model TutorialChapter {
   @@unique([postId, slug])
   @@index([postId, sortOrder])
 }
+
+model Benchmark {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String   @db.Text
+  info        String   @default("") @db.Text
+  published   Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  entries     BenchmarkEntry[]
+}
+
+model BenchmarkEntry {
+  id          String    @id @default(cuid())
+  benchmarkId String
+  benchmark   Benchmark @relation(fields: [benchmarkId], references: [id], onDelete: Cascade)
+  name        String
+  score       Float
+  sortOrder   Int       @default(0)
+
+  @@index([benchmarkId, score])
+}

@@ -6,10 +6,11 @@ export default async function AdminDashboardPage() {
   const session = await requireUser();
   const scope = authorScope(session);
 
-  const [authors, blogs, tutorials] = await Promise.all([
+  const [authors, blogs, tutorials, benchmarks] = await Promise.all([
     isAdmin(session) ? prisma.person.count() : Promise.resolve(0),
     prisma.post.count({ where: { type: "BLOG", ...scope } }),
     prisma.post.count({ where: { type: "TUTORIAL", ...scope } }),
+    isAdmin(session) ? prisma.benchmark.count() : Promise.resolve(0),
   ]);
 
   const cards = [
@@ -35,6 +36,16 @@ export default async function AdminDashboardPage() {
       href: "/admin/tutorials",
       hint: isAdmin(session) ? "All series" : "Your series",
     },
+    ...(isAdmin(session)
+      ? [
+          {
+            label: "Benchmarks",
+            count: benchmarks,
+            href: "/admin/benchmarks",
+            hint: "Leaderboards",
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -46,7 +57,7 @@ export default async function AdminDashboardPage() {
           ? " You can publish Blog and Tutorial under your author profile."
           : " You can manage authors and all content."}
       </p>
-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((card) => (
           <Link
             key={card.href}

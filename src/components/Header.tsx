@@ -5,6 +5,7 @@ const nav = [
   { href: "/blog", label: "Blog" },
   { href: "/tutorial", label: "Tutorial" },
   { href: "/people", label: "People" },
+  { href: "/benchmark", label: "Benchmark" },
 ];
 
 export function Header({ pathname = "/" }: { pathname?: string }) {

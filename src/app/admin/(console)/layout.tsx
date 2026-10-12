@@ -18,6 +18,9 @@ export default async function AdminConsoleLayout({
       : []),
     { href: "/admin/blogs", label: "Blogs" },
     { href: "/admin/tutorials", label: "Tutorials" },
+    ...(isAdminUser
+      ? [{ href: "/admin/benchmarks", label: "Benchmarks" }]
+      : []),
   ];
 
   return (
