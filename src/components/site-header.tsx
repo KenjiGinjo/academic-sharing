@@ -8,7 +8,8 @@ import { BrandLogo } from "./BrandLogo";
 const links = [
   { href: "/blog", label: "Blog" },
   { href: "/tutorial", label: "Tutorial" },
-  { href: "/people", label: "People" },
+  { href: "/benchmark", label: "Benchmark" },
+  { href: "/people", label: "About" },
 ];
 
 export function SiteHeader() {

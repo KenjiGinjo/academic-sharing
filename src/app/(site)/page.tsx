@@ -49,7 +49,7 @@ export default async function HomePage() {
 
       <section className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
         <SectionHeading
-          eyebrow="People"
+          eyebrow="About"
           title="Contributors behind the work"
           href="/people"
           linkLabel="Meet everyone"

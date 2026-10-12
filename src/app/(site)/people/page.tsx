@@ -6,7 +6,7 @@ import { listPeople } from "@/lib/content";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "People",
+  title: "About",
   description: "Researchers and writers in the CG NeurAI directory.",
 };
 
@@ -16,7 +16,7 @@ export default async function PeoplePage() {
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
       <SectionHeading
-        eyebrow="People"
+        eyebrow="About"
         title="Researchers and builders"
       />
       <p className="mb-12 max-w-2xl text-base leading-relaxed text-muted">
