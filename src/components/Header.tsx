@@ -8,7 +8,14 @@ const nav = [
   { href: "/people", label: "About" },
 ];
 
-export function Header({ pathname = "/" }: { pathname?: string }) {
+export function Header({
+  pathname = "/",
+  showBenchmark = false,
+}: {
+  pathname?: string;
+  showBenchmark?: boolean;
+}) {
+  const items = showBenchmark ? nav : nav.filter((item) => item.href !== "/benchmark");
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-8">
@@ -20,7 +27,7 @@ export function Header({ pathname = "/" }: { pathname?: string }) {
           <BrandLogo markClassName="h-8 w-8 text-accent-deep" />
         </Link>
         <nav className="flex items-center gap-1 sm:gap-2">
-          {nav.map((item) => {
+          {items.map((item) => {
             const active =
               pathname === item.href || pathname.startsWith(`${item.href}/`);
             return (

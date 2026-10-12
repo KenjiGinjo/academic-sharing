@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { SiteShell } from "@/components/SiteShell";
 import { parsePersonSubdomain } from "@/lib/profile";
+import { prisma } from "@/lib/prisma";
 
 export default async function SiteLayout({
   children,
@@ -13,8 +14,16 @@ export default async function SiteLayout({
   const isPersonSubdomain = Boolean(
     parsePersonSubdomain(host, rootDomain),
   );
+  const benchmarkCount = await prisma.benchmark.count({
+    where: { published: true },
+  });
 
   return (
-    <SiteShell isPersonSubdomain={isPersonSubdomain}>{children}</SiteShell>
+    <SiteShell
+      isPersonSubdomain={isPersonSubdomain}
+      showBenchmark={benchmarkCount > 0}
+    >
+      {children}
+    </SiteShell>
   );
 }
