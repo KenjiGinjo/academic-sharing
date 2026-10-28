@@ -147,6 +147,7 @@ body {
 
 .bn-reader {
   --bn-colors-editor-background: transparent;
+  --bn-paragraph-gap: 0.575rem;
 }
 
 .bn-reader .bn-editor {
@@ -163,7 +164,7 @@ body {
 }
 
 .bn-reader [data-content-type="paragraph"].bn-block-content {
-  margin-bottom: 1.15rem;
+  margin-bottom: var(--bn-paragraph-gap);
 }
 
 

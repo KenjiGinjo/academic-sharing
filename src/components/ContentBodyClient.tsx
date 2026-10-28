@@ -6,15 +6,14 @@ import { BlockNoteView } from "@blocknote/mantine";
 import { MantineProvider } from "@mantine/core";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
-import { parseStoredContent } from "@/lib/blocks";
+import { expandHardBreaks, parseStoredContent } from "@/lib/blocks";
 
 export function ContentBody({ content }: { content: string }) {
-  const initialContent = parseStoredContent(content) as
-    | PartialBlock[]
-    | undefined;
+  const parsed = parseStoredContent(content);
+  const initialContent = parsed ? expandHardBreaks(parsed) : undefined;
 
   const editor = useCreateBlockNote({
-    initialContent,
+    initialContent: initialContent as PartialBlock[] | undefined,
   });
 
   return (

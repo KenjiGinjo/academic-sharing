@@ -32,6 +32,42 @@ export function serializeBlocks(blocks: PartialBlock[]) {
   return JSON.stringify(blocks);
 }
 
+/** A hard break is a "\n" inside paragraph text. Split those into paragraphs. */
+export function expandHardBreaks(blocks: PartialBlock[]): PartialBlock[] {
+  return blocks.flatMap((block): PartialBlock[] => {
+    const children = block.children?.length
+      ? expandHardBreaks(block.children)
+      : block.children;
+    if (block.type !== "paragraph" || !Array.isArray(block.content)) {
+      return [{ ...block, children }];
+    }
+
+    const segments: typeof block.content[] = [[]];
+    let changed = false;
+    for (const node of block.content) {
+      if (!node || typeof node !== "object" || !("text" in node) || typeof node.text !== "string" || !node.text.includes("\n")) {
+        segments.at(-1)!.push(node);
+        continue;
+      }
+      changed = true;
+      node.text.split("\n").forEach((part, index) => {
+        if (index > 0) segments.push([]);
+        if (part) segments.at(-1)!.push({ ...node, text: part });
+      });
+    }
+
+    const kept = segments.filter((segment) => segment.length > 0);
+    if (!changed || kept.length === 0) return [{ ...block, children }];
+    return kept.map((content, index) => ({
+      type: "paragraph" as const,
+      props: block.props,
+      ...(index === 0 && block.id ? { id: block.id } : {}),
+      content,
+      ...(index === kept.length - 1 ? { children } : {}),
+    }));
+  });
+}
+
 function markdownToPartialBlocks(markdown: string): PartialBlock[] | undefined {
   const chunks = markdown.replace(/\r\n/g, "\n").split(/\n{2,}/);
   const blocks: PartialBlock[] = [];
