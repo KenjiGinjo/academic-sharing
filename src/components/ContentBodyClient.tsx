@@ -19,7 +19,7 @@ export function ContentBody({ content }: { content: string }) {
 
   return (
     <MantineProvider forceColorScheme="light">
-      <div className="bn-reader bg-transparent">
+      <div className="bn-reader -mx-3 bg-transparent sm:-mx-4">
         <BlockNoteView
           editor={editor}
           editable={false}
