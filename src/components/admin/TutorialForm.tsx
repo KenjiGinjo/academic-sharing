@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ContentEditor } from "@/components/ContentEditor";
 import { saveTutorialAction } from "@/app/admin/actions";
 import type { Person } from "@prisma/client";
@@ -52,6 +52,7 @@ export function TutorialForm({
     post?.chapters?.length
       ? post.chapters.map((chapter) =>
           newChapter({
+            key: chapter.id,
             id: chapter.id,
             publicId: chapter.publicId,
             title: chapter.title,
@@ -59,8 +60,34 @@ export function TutorialForm({
             content: chapter.content,
           }),
         )
-      : [newChapter()],
+      : [newChapter({ key: "chapter-initial" })],
   );
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
+  const [scrollKey, setScrollKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!scrollKey) return;
+    document.getElementById(`chapter-${scrollKey}`)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [scrollKey]);
+
+  function addChapter() {
+    const chapter = newChapter();
+    setCollapsed(new Set(chapters.map((item) => item.key)));
+    setChapters((prev) => [...prev, chapter]);
+    setScrollKey(chapter.key);
+  }
+
+  function toggleChapter(key: string) {
+    setCollapsed((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
 
   const publishedAt = post?.publishedAt
     ? post.publishedAt.toISOString().slice(0, 10)
@@ -166,20 +193,36 @@ export function TutorialForm({
           <h2 className="text-sm font-medium">Chapters</h2>
           <button
             type="button"
-            onClick={() => setChapters((prev) => [...prev, newChapter()])}
+            onClick={addChapter}
             className="rounded border border-border px-2.5 py-1 text-sm hover:bg-background"
           >
             Add chapter
           </button>
         </div>
         <div className="space-y-4">
-          {chapters.map((chapter, index) => (
+          {chapters.map((chapter, index) => {
+            const isCollapsed = collapsed.has(chapter.key);
+            return (
             <div
               key={chapter.key}
+              id={`chapter-${chapter.key}`}
               className="rounded border border-border bg-background p-4"
             >
-              <div className="mb-3 flex items-center justify-between">
-                <p className="text-sm font-medium">Chapter {index + 1}</p>
+              <div className="flex items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => toggleChapter(chapter.key)}
+                  aria-expanded={!isCollapsed}
+                  className="flex min-w-0 flex-1 items-center gap-2 text-left text-sm font-medium"
+                >
+                  <span aria-hidden className="text-muted">
+                    {isCollapsed ? "▸" : "▾"}
+                  </span>
+                  <span className="truncate">
+                    Chapter {index + 1}
+                    {chapter.title ? ` · ${chapter.title}` : ""}
+                  </span>
+                </button>
                 {chapters.length > 1 ? (
                   <button
                     type="button"
@@ -194,6 +237,7 @@ export function TutorialForm({
                   </button>
                 ) : null}
               </div>
+              <div className={isCollapsed ? "hidden" : "mt-3"}>
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="block text-sm">
                   <span className="mb-1 block text-muted">Title</span>
@@ -246,8 +290,10 @@ export function TutorialForm({
                   minHeight={240}
                 />
               </div>
+              </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
