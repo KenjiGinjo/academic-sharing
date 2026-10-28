@@ -62,7 +62,9 @@ export function TutorialForm({
         )
       : [newChapter({ key: "chapter-initial" })],
   );
-  const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
+  const [collapsed, setCollapsed] = useState<Set<string>>(
+    () => new Set(post?.chapters?.map((chapter) => chapter.id) ?? []),
+  );
   const [scrollKey, setScrollKey] = useState<string | null>(null);
 
   useEffect(() => {
