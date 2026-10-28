@@ -159,7 +159,11 @@ body {
 }
 
 .bn-reader .bn-block-outer {
-  max-width: 42rem;
+  max-width: none;
+}
+
+.bn-reader [data-content-type="paragraph"].bn-block-content {
+  margin-bottom: 1.15rem;
 }
 
 
