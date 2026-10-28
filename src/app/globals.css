@@ -150,16 +150,28 @@ body {
 }
 
 .bn-reader .bn-editor {
-  padding-inline: 0.5rem;
+  padding-inline: 0;
   background-color: transparent !important;
+}
+
+.bn-reader .bn-block-outer:has([data-content-type="paragraph"]),
+.bn-reader .bn-block-outer:has([data-content-type="bulletListItem"]),
+.bn-reader .bn-block-outer:has([data-content-type="numberedListItem"]) {
+  line-height: 1.8;
+}
+
+.bn-reader .bn-block-outer:has([data-content-type="paragraph"]) {
+  margin-bottom: 0.85rem;
 }
 
 .bn-reader .bn-container {
   background-color: transparent !important;
 }
 
-.bn-reader .bn-block-outer {
-  max-width: 42rem;
+.bn-reader [data-content-type="paragraph"] .bn-inline-content {
+  text-align: justify;
+  hyphens: auto;
+  text-wrap: pretty;
 }
 
 
