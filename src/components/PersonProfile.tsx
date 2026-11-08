@@ -1,5 +1,11 @@
 import type { ReactNode } from "react";
 import type { ProfileView } from "@/lib/content";
+import { BrandLogo } from "./BrandLogo";
+
+function labHomeHref() {
+  const root = process.env.NEXT_PUBLIC_ROOT_DOMAIN?.trim() || "cgneurai.com";
+  return `https://${root}`;
+}
 
 const PUB_LABELS: Record<string, string> = {
   JOURNAL: "Journal Articles",
@@ -13,7 +19,6 @@ const PUB_ORDER = ["JOURNAL", "CONFERENCE", "PREPRINT", "OTHER"];
 export function PersonProfile({ profile }: { profile: ProfileView }) {
   const about = profile.about?.trim() || profile.bio;
   const nav = [
-    { id: "about", label: "About", show: Boolean(about) },
     { id: "interests", label: "Interests", show: profile.interests.length > 0 },
     {
       id: "publications",
@@ -105,29 +110,49 @@ export function PersonProfile({ profile }: { profile: ProfileView }) {
   return (
     <div id="top" className="min-h-full bg-background">
       <header className="sticky top-0 z-10 border-b border-border/80 bg-surface/90 backdrop-blur-md">
-        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-3 sm:px-8">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-x-8 gap-y-2 px-5 py-3 sm:px-8">
           <a
             href="#top"
-            className="text-sm font-medium tracking-tight text-foreground transition hover:text-accent-deep"
+            className="truncate text-base font-medium tracking-tight text-foreground transition hover:text-accent-deep"
           >
             {profile.name}
           </a>
-          {nav.length > 1 ? (
-            <nav
-              className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted"
-              aria-label="Page sections"
+          <div className="flex flex-wrap items-center justify-end gap-x-5 gap-y-2">
+            {nav.length > 1 ? (
+              <nav
+                className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted"
+                aria-label="Page sections"
+              >
+                {nav.map((item) => (
+                  <a
+                    key={item.id}
+                    href={`#${item.id}`}
+                    className="transition hover:text-accent-deep"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </nav>
+            ) : null}
+            <a
+              href={labHomeHref()}
+              className="shrink-0 text-foreground transition hover:text-accent-deep"
+              aria-label="CG NeuroAI home"
             >
-              {nav.map((item) => (
-                <a
-                  key={item.id}
-                  href={`#${item.id}`}
-                  className="transition hover:text-accent-deep"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </nav>
-          ) : null}
+              <span className="sm:hidden">
+                <BrandLogo
+                  showWordmark={false}
+                  markClassName="h-7 w-7 text-accent-deep"
+                />
+              </span>
+              <span className="hidden sm:inline-flex">
+                <BrandLogo
+                  className="text-[15px]"
+                  markClassName="h-6 w-6 text-accent-deep"
+                />
+              </span>
+            </a>
+          </div>
         </div>
       </header>
 
